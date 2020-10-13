@@ -1,0 +1,26 @@
+[package]
+name = "findstream"
+version = "0.1.0"
+authors = ["Dominik Nakamura <dnaka91@gmail.com>"]
+edition = "2018"
+license = "AGPL-3.0-only"
+
+[dependencies]
+anyhow = "1.0.33"
+askama = { version = "0.10.3", default-features = false, features = ["with-warp"] }
+askama_warp = "0.10.0"
+chrono = { version = "0.4.19", features = ["serde"] }
+dotenv = "0.15.0"
+log = "0.4.11"
+once_cell = "1.4.1"
+pretty_env_logger = "0.4.0"
+reqwest = { version = "0.10.8", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1.0.116", features = ["derive"] }
+tokio = { version = "0.2.22", features = ["macros", "rt-core", "signal"] }
+toml = "0.5.7"
+url = "2.1.1"
+warp = { version = "0.2.5", default-features = false, features = ["compression"] }
+
+[profile.release]
+lto = true
+panic = "abort"
