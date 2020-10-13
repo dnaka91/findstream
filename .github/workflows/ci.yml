@@ -77,4 +77,5 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         with:
+          push: true
           tags: ${{ steps.prep.outputs.tags }}
