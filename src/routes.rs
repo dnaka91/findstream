@@ -41,6 +41,7 @@ pub(super) mod filters {
 pub(super) mod handlers {
     use std::convert::Infallible;
 
+    use log::error;
     use warp::Reply;
 
     use super::{Client, SearchParams};
@@ -58,24 +59,30 @@ pub(super) mod handlers {
             .lock()
             .await
             .get_streams_all(params.category.game_id())
-            .await
-            .unwrap();
+            .await;
+
+        let resp = match resp {
+            Ok(resp) => resp,
+            Err(e) => {
+                error!("failed querying twitch: {:?}", e);
+                return Ok(templates::Results::error());
+            }
+        };
 
         let SearchParams {
             query, language, ..
         } = params;
         let query_lowercase = query.to_lowercase();
 
-        Ok(templates::Results {
+        Ok(templates::Results::new(
             query,
-            responses: resp
-                .into_iter()
+            resp.into_iter()
                 .filter(move |r| {
                     r.title.to_lowercase().contains(&query_lowercase)
                         && (language.is_empty() || r.language == language)
                 })
                 .collect(),
-        })
+        ))
     }
 }
 

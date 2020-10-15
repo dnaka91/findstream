@@ -10,8 +10,27 @@ pub struct Index;
 #[derive(Template)]
 #[template(path = "results.html")]
 pub struct Results {
-    pub query: String,
-    pub responses: Vec<Stream>,
+    query: String,
+    responses: Vec<Stream>,
+    error: bool,
+}
+
+impl Results {
+    pub fn new(query: String, responses: Vec<Stream>) -> Self {
+        Self {
+            query,
+            responses,
+            error: false,
+        }
+    }
+
+    pub const fn error() -> Self {
+        Self {
+            query: String::new(),
+            responses: Vec::new(),
+            error: true,
+        }
+    }
 }
 
 fn since_now(value: &Option<DateTime<Utc>>) -> String {

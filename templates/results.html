@@ -6,7 +6,15 @@
 
     {% include "header.html" %}
 
-    {% if responses.is_empty() %}
+    {% if error %}
+    <div class="columns">
+      <div class="column has-text-centered">
+        <div class="box has-text-white has-background-danger">
+          <span class="is-size-4">🤯 Sorry something went wrong, please wait a moment and try again 🤯</span>
+        </div>
+      </div>
+    </div>
+    {% else if responses.is_empty() %}
     <div class="columns">
       <div class="column has-text-centered">
         <div class="box">
