@@ -1,7 +1,10 @@
 use askama::Template;
 use chrono::prelude::*;
 
+use self::lang::translate_iso_639_1;
 use crate::twitch::Stream;
+
+mod lang;
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -36,11 +39,27 @@ impl Results {
 fn since_now(value: &Option<DateTime<Utc>>) -> String {
     if let Some(value) = value {
         let duration = Utc::now() - *value;
-        format!(
-            "{} hours {} minutes",
-            duration.num_hours(),
-            duration.num_minutes() % 60
-        )
+        let mut buf = String::new();
+
+        match duration.num_days() {
+            0 => {}
+            1 => buf.push_str("1 day"),
+            d => buf.push_str(&format!("{} days", d)),
+        }
+
+        match duration.num_hours() % 24 {
+            0 => {}
+            1 => buf.push_str(" 1 hour"),
+            h => buf.push_str(&format!(" {} hours", h)),
+        }
+
+        match duration.num_minutes() % 60 {
+            0 => {}
+            1 => buf.push_str(" 1 minute"),
+            m => buf.push_str(&format!(" {} minutes", m)),
+        }
+
+        buf
     } else {
         String::new()
     }
