@@ -69,20 +69,23 @@ pub(super) mod handlers {
             }
         };
 
-        let SearchParams {
-            query, language, ..
-        } = params;
-        let query_lowercase = query.to_lowercase();
+        let query_words = params
+            .query
+            .split_whitespace()
+            .map(str::to_lowercase)
+            .collect::<Vec<_>>();
 
-        Ok(templates::Results::new(
-            query,
-            resp.into_iter()
-                .filter(move |r| {
-                    r.title.to_lowercase().contains(&query_lowercase)
-                        && (language.is_empty() || r.language == language)
-                })
-                .collect(),
-        ))
+        let streams = resp
+            .into_iter()
+            .filter(|r| {
+                let title = r.title.to_lowercase();
+
+                query_words.iter().any(|w| title.contains(w))
+                    && (params.language.is_empty() || r.language == params.language)
+            })
+            .collect();
+
+        Ok(templates::Results::new(query_words, streams))
     }
 }
 

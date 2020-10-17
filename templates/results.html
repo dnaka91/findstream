@@ -14,41 +14,50 @@
         </div>
       </div>
     </div>
-    {% else if responses.is_empty() %}
+    {% else if streams.is_empty() %}
     <div class="columns">
       <div class="column has-text-centered">
         <div class="box">
-          <span class="is-size-4">😭 Nobody streaming <strong>{{ query }}</strong> right now 😭</span>
+          <span class="is-size-4">
+            😭 Nobody streaming
+            {% for word in query_words -%}
+            {%- if query_words.len() > 1 && loop.index0 > 0 -%}
+              {%- if loop.last -%}&nbsp;or&nbsp;{%- else -%},&nbsp;{% endif -%}
+            {%- endif -%}
+            <strong>{{ word }}</strong>
+            {%- endfor %}
+            right now 😭
+          </span>
         </div>
       </div>
     </div>
     {% else %}
     <div class="tile is-ancestor">
-      {% for resp in responses %}
+      {% for stream in streams %}
       <div class="tile is-parent">
         <div class="tile is-child card">
           <div class="card-image">
             <figure class="image is-16by9">
-              <img src="{{ self::sized(resp.thumbnail_url, 640, 360) }}">
+              <img src="{{ self::sized(stream.thumbnail_url, 640, 360) }}">
             </figure>
           </div>
           <div class="card-content">
             <p class="title is-4">
-              <a href="https://twitch.tv/{{ resp.user_name }}">{{ resp.title }}</a>
+              <a href="https://twitch.tv/{{ stream.user_name }}">{{ stream.title }}</a>
             </p>
-            <p class="subtitle is-6">@{{ resp.user_name }}</p>
+            <p class="subtitle is-6">@{{ stream.user_name }}</p>
             <div class="content">
               <div>
                 <span class="icon">🎤</span>
-                <span>Speaking <strong>{{ self::translate_iso_639_1(resp.language) }}</strong></span>
+                <span>Speaking <strong>{{ self::translate_iso_639_1(stream.language) }}</strong></span>
               </div>
               <div>
                 <span class="icon">⏱️</span>
-                <span>Streaming for <strong>{{ self::since_now(resp.started_at) }}</strong></span>
+                <span>Streaming for <strong>{{ self::since_now(stream.started_at) }}</strong></span>
               </div>
               <div>
                 <span class="icon">👀</span>
-                <span>With <strong>{{ resp.viewer_count }} viewers</strong></span>
+                <span>With <strong>{{ stream.viewer_count }} viewers</strong></span>
               </div>
             </div>
           </div>

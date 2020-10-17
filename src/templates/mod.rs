@@ -13,24 +13,24 @@ pub struct Index;
 #[derive(Template)]
 #[template(path = "results.html")]
 pub struct Results {
-    query: String,
-    responses: Vec<Stream>,
+    query_words: Vec<String>,
+    streams: Vec<Stream>,
     error: bool,
 }
 
 impl Results {
-    pub fn new(query: String, responses: Vec<Stream>) -> Self {
+    pub fn new(query_words: Vec<String>, streams: Vec<Stream>) -> Self {
         Self {
-            query,
-            responses,
+            query_words,
+            streams,
             error: false,
         }
     }
 
     pub const fn error() -> Self {
         Self {
-            query: String::new(),
-            responses: Vec::new(),
+            query_words: Vec::new(),
+            streams: Vec::new(),
             error: true,
         }
     }
