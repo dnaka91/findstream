@@ -57,20 +57,28 @@ pub struct Pagination {
 #[derive(Copy, Clone, Deserialize)]
 pub enum Category {
     Art,
+    BeautyAndBodyArt,
+    FoodAndDrink,
     JustChatting,
     MakersAndCrafting,
+    Music,
     Retro,
     ScienceAndTechnology,
+    TalkShowsAndPodcasts,
 }
 
 impl Category {
     pub const fn game_id(self) -> &'static str {
         match self {
             Self::Art => "509660",
+            Self::BeautyAndBodyArt => "509669",
+            Self::FoodAndDrink => "509667",
             Self::JustChatting => "509658",
             Self::MakersAndCrafting => "509673",
+            Self::Music => "26936",
             Self::Retro => "27284",
             Self::ScienceAndTechnology => "509670",
+            Self::TalkShowsAndPodcasts => "417752",
         }
     }
 
@@ -78,10 +86,14 @@ impl Category {
     const fn name(self) -> &'static str {
         match self {
             Self::Art => "Art",
+            Self::BeautyAndBodyArt => "Beauty & Body Art",
+            Self::FoodAndDrink => "Food & Drink",
             Self::JustChatting => "Just Chatting",
             Self::MakersAndCrafting => "Makers & Crafting",
+            Self::Music => "Music",
             Self::Retro => "Retro",
             Self::ScienceAndTechnology => "Science & Technology",
+            Self::TalkShowsAndPodcasts => "Talk Shows & Podcasts",
         }
     }
 }
