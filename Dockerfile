@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:experimental
+# syntax = docker/dockerfile:1.2
 FROM clux/muslrust:stable as builder
 
 COPY src/ src/
