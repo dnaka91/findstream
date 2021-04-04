@@ -43,7 +43,7 @@ where
         }
     }
 
-    Ok(d.deserialize_str(Visitor)?)
+    d.deserialize_str(Visitor)
 }
 
 pub fn duration<'de, D>(d: D) -> Result<Duration, D::Error>
@@ -75,5 +75,5 @@ where
         }
     }
 
-    Ok(d.deserialize_i64(Visitor)?)
+    d.deserialize_i64(Visitor)
 }
