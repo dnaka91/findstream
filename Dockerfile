@@ -1,6 +1,9 @@
 # syntax = docker/dockerfile:1.2
 FROM clux/muslrust:stable as builder
 
+WORKDIR /volume
+
+COPY assets/ assets/
 COPY src/ src/
 COPY templates/ templates/
 COPY Cargo.lock Cargo.toml ./
