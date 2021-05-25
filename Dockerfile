@@ -13,7 +13,9 @@ RUN --mount=type=cache,target=/root/.cargo/git \
     --mount=type=cache,target=/volume/target \
     cargo install --locked --path .
 
-FROM alpine:3.12
+RUN strip --strip-all /root/.cargo/bin/findstream
+
+FROM scratch
 
 WORKDIR /data
 
