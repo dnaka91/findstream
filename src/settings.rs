@@ -10,7 +10,11 @@ pub struct Settings {
 }
 
 pub fn load() -> Result<Settings> {
-    let locations = &["/app/findstream.toml", "findstream.toml"];
+    let locations = &[
+        concat!("/etc/", env!("CARGO_CRATE_NAME"), "/config.toml"),
+        concat!("/app/", env!("CARGO_CRATE_NAME"), ".toml"),
+        concat!(env!("CARGO_CRATE_NAME"), ".toml"),
+    ];
     let buf = locations.iter().find_map(|loc| fs::read(loc).ok());
 
     match buf {
