@@ -3,13 +3,11 @@
 #![warn(clippy::nursery)]
 #![allow(clippy::module_name_repetitions, clippy::option_if_let_else)]
 
-use std::env;
-use std::sync::Arc;
+use std::{env, sync::Arc};
 
 use anyhow::Result;
 use log::info;
-use tokio::signal;
-use tokio::sync::Mutex;
+use tokio::{signal, sync::Mutex};
 
 use crate::twitch::TwitchClient;
 

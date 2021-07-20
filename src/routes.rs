@@ -1,5 +1,4 @@
-use std::convert::Infallible;
-use std::sync::Arc;
+use std::{convert::Infallible, sync::Arc};
 
 use serde::Deserialize;
 use tokio::sync::Mutex;
@@ -19,8 +18,7 @@ struct SearchParams {
 pub(super) mod filters {
     use warp::{Filter, Rejection, Reply};
 
-    use super::handlers;
-    use super::{with_client, Client, SearchParams};
+    use super::{handlers, with_client, Client, SearchParams};
 
     /// GET /
     pub(super) fn index() -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {

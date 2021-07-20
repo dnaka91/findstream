@@ -1,9 +1,10 @@
 use anyhow::Result;
-use chrono::prelude::*;
-use chrono::Duration;
+use chrono::{prelude::*, Duration};
 use log::info;
-use reqwest::header::{self, HeaderMap};
-use reqwest::Client;
+use reqwest::{
+    header::{self, HeaderMap},
+    Client,
+};
 use serde::{Deserialize, Serialize};
 use url::Url;
 

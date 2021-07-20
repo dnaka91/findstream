@@ -1,7 +1,6 @@
 use std::fmt;
 
-use chrono::prelude::*;
-use chrono::Duration;
+use chrono::{prelude::*, Duration};
 use serde::de;
 
 pub fn opt_datetime<'de, D>(d: D) -> Result<Option<DateTime<Utc>>, D::Error>
