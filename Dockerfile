@@ -17,11 +17,9 @@ RUN strip --strip-all /root/.cargo/bin/findstream
 
 FROM scratch
 
-WORKDIR /data
-
-COPY --from=builder /root/.cargo/bin/findstream /app/
+COPY --from=builder /root/.cargo/bin/findstream /bin/
 
 EXPOSE 8080
 STOPSIGNAL SIGINT
 
-ENTRYPOINT ["/app/findstream"]
+ENTRYPOINT ["/bin/findstream"]
