@@ -1,85 +1,70 @@
-use std::{convert::Infallible, sync::Arc};
+use std::sync::Arc;
 
-use serde::Deserialize;
+use axum::{prelude::*, routing::BoxRoute, AddExtensionLayer};
 use tokio::sync::Mutex;
-use warp::{Filter, Rejection, Reply};
+use tower::ServiceBuilder;
+use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 
-use crate::twitch::{Category, TwitchClient};
+use crate::twitch::TwitchClient;
 
 type Client = Arc<Mutex<TwitchClient>>;
 
-#[derive(Deserialize)]
-struct SearchParams {
-    category: Category,
-    query: String,
-    language: String,
-}
-
-pub(super) mod filters {
-    use warp::{Filter, Rejection, Reply};
-
-    use super::{handlers, with_client, Client, SearchParams};
-
-    /// GET /
-    pub(super) fn index() -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
-        warp::get().map(handlers::index)
-    }
-
-    /// GET /favicon-{w}x{h}.png
-    pub(super) fn favicon() -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
-        favicon_32().or(favicon_16())
-    }
-
-    /// GET /favicon-32x32.png
-    fn favicon_32() -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
-        warp::get()
-            .and(warp::path!("favicon-32x32.png"))
-            .map(handlers::favicon_32)
-    }
-
-    /// GET /favicon-16x16.png
-    fn favicon_16() -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
-        warp::get()
-            .and(warp::path!("favicon-16x16.png"))
-            .map(handlers::favicon_16)
-    }
-
-    /// GET /?category=ScienceAndTechnology&query=rust
-    pub(super) fn search(
-        client: Client,
-    ) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
-        warp::get()
-            .and(warp::query::<SearchParams>())
-            .and(with_client(client))
-            .and_then(handlers::search)
-    }
+pub fn build(client: Client) -> BoxRoute<Body> {
+    route("/favicon-16x16.png", get(handlers::favicon_16))
+        .route("/favicon-32x32.png", get(handlers::favicon_32))
+        .route("/", get(handlers::index))
+        .route("/search", get(handlers::search))
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+                .layer(CompressionLayer::new())
+                .layer(AddExtensionLayer::new(client))
+                .into_inner(),
+        )
+        .boxed()
 }
 
 pub(super) mod handlers {
-    use std::convert::Infallible;
+    #![allow(clippy::unused_async)]
 
-    use log::error;
-    use warp::{http::Response, Reply};
+    use axum::{
+        extract::{Extension, Query},
+        response::IntoResponse,
+    };
+    use hyper::{Body, Response};
+    use serde::Deserialize;
+    use tracing::error;
 
-    use super::{Client, SearchParams};
-    use crate::templates;
+    use super::{responses::HtmlTemplate, Client};
+    use crate::{templates, twitch::Category};
 
-    pub(super) fn index() -> impl Reply {
-        templates::Index
+    #[derive(Deserialize)]
+    pub(super) struct SearchParams {
+        category: Category,
+        query: String,
+        language: String,
     }
 
-    pub(super) fn favicon_32() -> impl Reply {
-        Response::new(&include_bytes!("../assets/favicon-32x32.png")[..])
+    pub(super) async fn index() -> impl IntoResponse {
+        HtmlTemplate(templates::Index)
     }
 
-    pub(super) fn favicon_16() -> impl Reply {
-        Response::new(&include_bytes!("../assets/favicon-16x16.png")[..])
+    pub(super) async fn favicon_32() -> impl IntoResponse {
+        Response::new(Body::from(
+            &include_bytes!("../assets/favicon-32x32.png")[..],
+        ))
+    }
+
+    pub(super) async fn favicon_16() -> impl IntoResponse {
+        Response::new(Body::from(
+            &include_bytes!("../assets/favicon-16x16.png")[..],
+        ))
     }
 
     pub(super) async fn search(
-        params: SearchParams,
-        client: Client,
-    ) -> Result<impl Reply, Infallible> {
+        Query(params): Query<SearchParams>,
+        Extension(client): Extension<Client>,
+    ) -> impl IntoResponse {
         let resp = client
             .lock()
             .await
@@ -90,7 +75,7 @@ pub(super) mod handlers {
             Ok(resp) => resp,
             Err(e) => {
                 error!("failed querying twitch: {:?}", e);
-                return Ok(templates::Results::error());
+                return HtmlTemplate(templates::Results::error());
             }
         };
 
@@ -110,18 +95,29 @@ pub(super) mod handlers {
             })
             .collect();
 
-        Ok(templates::Results::new(query_words, streams))
+        HtmlTemplate(templates::Results::new(query_words, streams))
     }
 }
 
-pub fn build(client: Client) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
-    filters::search(client)
-        .or(filters::favicon())
-        .or(filters::index())
-        .with(warp::log("api"))
-        .with(warp::compression::gzip())
-}
+pub mod responses {
+    use askama::Template;
+    use axum::response::{self, IntoResponse};
+    use hyper::{Body, Response, StatusCode};
 
-fn with_client(client: Client) -> impl Filter<Extract = (Client,), Error = Infallible> + Clone {
-    warp::any().map(move || client.clone())
+    pub struct HtmlTemplate<T>(pub T);
+
+    impl<T> IntoResponse for HtmlTemplate<T>
+    where
+        T: Template,
+    {
+        fn into_response(self) -> hyper::Response<hyper::Body> {
+            match self.0.render() {
+                Ok(html) => response::Html(html).into_response(),
+                Err(_) => Response::builder()
+                    .status(StatusCode::INTERNAL_SERVER_ERROR)
+                    .body(Body::empty())
+                    .unwrap(),
+            }
+        }
+    }
 }

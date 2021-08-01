@@ -3,24 +3,25 @@ name = "findstream"
 version = "0.2.0"
 authors = ["Dominik Nakamura <dnaka91@gmail.com>"]
 edition = "2018"
+resolver = "2"
 license = "AGPL-3.0-only"
 
 [dependencies]
 anyhow = "1.0.42"
-askama = { version = "0.10.5", default-features = false, features = ["with-warp"] }
-askama_warp = "0.11.0"
+askama = { version = "0.10.5", default-features = false }
+axum = "0.1.1"
 chrono = { version = "0.4.19", features = ["serde"] }
 dotenv = "0.15.0"
-log = "0.4.14"
-once_cell = "1.8.0"
-pretty_env_logger = "0.4.0"
+hyper = { version = "0.14.11", features = ["full"] }
 reqwest = { version = "0.11.4", default-features = false, features = ["json", "rustls-tls"] }
-serde = { version = "1.0.126", features = ["derive"] }
-tokio = { version = "1.8.2", features = ["macros", "rt", "signal"] }
+serde = { version = "1.0.127", features = ["derive"] }
+tokio = { version = "1.9.0", features = ["macros", "rt", "signal"] }
 toml = "0.5.8"
+tower = "0.4.8"
+tower-http = { version = "0.1.1", features = ["compression-gzip", "decompression-gzip", "trace"] }
+tracing = "0.1.26"
+tracing-subscriber = "0.2.19"
 url = "2.2.2"
-warp = { version = "0.3.1", default-features = false, features = ["compression"] }
 
 [profile.release]
 lto = true
-panic = "abort"

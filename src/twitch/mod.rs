@@ -1,11 +1,11 @@
 use anyhow::Result;
 use chrono::{prelude::*, Duration};
-use log::info;
 use reqwest::{
     header::{self, HeaderMap},
     Client,
 };
 use serde::{Deserialize, Serialize};
+use tracing::info;
 use url::Url;
 
 mod deser;
