@@ -11,9 +11,9 @@ pub struct Settings {
 
 pub fn load() -> Result<Settings> {
     let locations = &[
-        concat!("/etc/", env!("CARGO_CRATE_NAME"), "/config.toml"),
-        concat!("/app/", env!("CARGO_CRATE_NAME"), ".toml"),
-        concat!(env!("CARGO_CRATE_NAME"), ".toml"),
+        concat!("/etc/", env!("CARGO_PKG_NAME"), "/config.toml"),
+        concat!("/app/", env!("CARGO_PKG_NAME"), ".toml"),
+        concat!(env!("CARGO_PKG_NAME"), ".toml"),
     ];
     let buf = locations.iter().find_map(|loc| fs::read(loc).ok());
 
