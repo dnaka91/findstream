@@ -30,10 +30,11 @@ pub(super) mod handlers {
     #![allow(clippy::unused_async)]
 
     use axum::{
+        body::Body,
         extract::{Extension, Query},
+        http::Response,
         response::IntoResponse,
     };
-    use hyper::{Body, Response};
     use serde::Deserialize;
     use tracing::error;
 
@@ -107,9 +108,9 @@ pub mod responses {
     use askama::Template;
     use axum::{
         body::{Bytes, Full},
+        http::{Response, StatusCode},
         response::{self, IntoResponse},
     };
-    use hyper::{Response, StatusCode};
 
     pub struct HtmlTemplate<T>(pub T);
 

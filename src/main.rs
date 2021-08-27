@@ -6,7 +6,7 @@
 use std::{env, net::SocketAddr, sync::Arc};
 
 use anyhow::Result;
-use hyper::Server;
+use axum::Server;
 use tokio::{signal, sync::Mutex};
 use tracing::info;
 
