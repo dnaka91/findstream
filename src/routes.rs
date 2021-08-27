@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{prelude::*, routing::BoxRoute, AddExtensionLayer};
+use axum::{handler::get, routing::BoxRoute, AddExtensionLayer, Router};
 use tokio::sync::Mutex;
 use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
@@ -9,8 +9,9 @@ use crate::twitch::TwitchClient;
 
 type Client = Arc<Mutex<TwitchClient>>;
 
-pub fn build(client: Client) -> BoxRoute<Body> {
-    route("/favicon-16x16.png", get(handlers::favicon_16))
+pub fn build(client: Client) -> Router<BoxRoute> {
+    Router::new()
+        .route("/favicon-16x16.png", get(handlers::favicon_16))
         .route("/favicon-32x32.png", get(handlers::favicon_32))
         .route("/", get(handlers::index))
         .route("/search", get(handlers::search))
@@ -21,6 +22,7 @@ pub fn build(client: Client) -> BoxRoute<Body> {
                 .layer(AddExtensionLayer::new(client))
                 .into_inner(),
         )
+        .check_infallible()
         .boxed()
 }
 
@@ -100,9 +102,14 @@ pub(super) mod handlers {
 }
 
 pub mod responses {
+    use std::convert::Infallible;
+
     use askama::Template;
-    use axum::response::{self, IntoResponse};
-    use hyper::{Body, Response, StatusCode};
+    use axum::{
+        body::{Bytes, Full},
+        response::{self, IntoResponse},
+    };
+    use hyper::{Response, StatusCode};
 
     pub struct HtmlTemplate<T>(pub T);
 
@@ -110,12 +117,15 @@ pub mod responses {
     where
         T: Template,
     {
-        fn into_response(self) -> hyper::Response<hyper::Body> {
+        type Body = Full<Bytes>;
+        type BodyError = Infallible;
+
+        fn into_response(self) -> hyper::Response<Self::Body> {
             match self.0.render() {
                 Ok(html) => response::Html(html).into_response(),
                 Err(_) => Response::builder()
                     .status(StatusCode::INTERNAL_SERVER_ERROR)
-                    .body(Body::empty())
+                    .body(Full::default())
                     .unwrap(),
             }
         }
