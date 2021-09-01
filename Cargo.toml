@@ -14,7 +14,7 @@ chrono = { version = "0.4.19", features = ["serde"] }
 dotenv = "0.15.0"
 hyper = { version = "0.14.12", features = ["http2"] }
 reqwest = { version = "0.11.4", default-features = false, features = ["json", "rustls-tls"] }
-serde = { version = "1.0.129", features = ["derive"] }
+serde = { version = "1.0.130", features = ["derive"] }
 tokio = { version = "1.10.1", features = ["macros", "rt", "signal"] }
 toml = "0.5.8"
 tower = "0.4.8"
