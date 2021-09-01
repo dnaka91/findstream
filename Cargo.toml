@@ -15,7 +15,7 @@ dotenv = "0.15.0"
 hyper = { version = "0.14.12", features = ["http2"] }
 reqwest = { version = "0.11.4", default-features = false, features = ["json", "rustls-tls"] }
 serde = { version = "1.0.129", features = ["derive"] }
-tokio = { version = "1.10.1", features = ["macros", "rt", "signal"] }
+tokio = { version = "1.11.0", features = ["macros", "rt", "signal"] }
 toml = "0.5.8"
 tower = "0.4.8"
 tower-http = { version = "0.1.1", features = ["compression-gzip", "decompression-gzip", "trace"] }
