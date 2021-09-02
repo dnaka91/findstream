@@ -9,13 +9,13 @@ license = "AGPL-3.0-only"
 [dependencies]
 anyhow = "1.0.43"
 askama = { version = "0.10.5", default-features = false }
-axum = "0.2.1"
+axum = "0.2.3"
 chrono = { version = "0.4.19", features = ["serde"] }
 dotenv = "0.15.0"
 hyper = { version = "0.14.12", features = ["http2"] }
 reqwest = { version = "0.11.4", default-features = false, features = ["json", "rustls-tls"] }
-serde = { version = "1.0.129", features = ["derive"] }
-tokio = { version = "1.10.1", features = ["macros", "rt", "signal"] }
+serde = { version = "1.0.130", features = ["derive"] }
+tokio = { version = "1.11.0", features = ["macros", "rt", "signal"] }
 toml = "0.5.8"
 tower = "0.4.8"
 tower-http = { version = "0.1.1", features = ["compression-gzip", "decompression-gzip", "trace"] }
