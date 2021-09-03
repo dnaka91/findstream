@@ -65,6 +65,7 @@ pub enum Category {
     Music,
     Retro,
     ScienceAndTechnology,
+    SoftwareAndGameDevelopment,
     TalkShowsAndPodcasts,
 }
 
@@ -79,6 +80,7 @@ impl Category {
             Self::Music => "26936",
             Self::Retro => "27284",
             Self::ScienceAndTechnology => "509670",
+            Self::SoftwareAndGameDevelopment => "1469308723",
             Self::TalkShowsAndPodcasts => "417752",
         }
     }
@@ -94,6 +96,7 @@ impl Category {
             Self::Music => "Music",
             Self::Retro => "Retro",
             Self::ScienceAndTechnology => "Science & Technology",
+            Self::SoftwareAndGameDevelopment => "Software and Game Development",
             Self::TalkShowsAndPodcasts => "Talk Shows & Podcasts",
         }
     }
