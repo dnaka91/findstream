@@ -1,5 +1,8 @@
 name: CI
 on: [pull_request, push]
+env:
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: "-C debuginfo=0 -D warnings"
 jobs:
   test:
     name: Test
@@ -16,6 +19,8 @@ jobs:
           profile: minimal
           toolchain: ${{ matrix.rust }}
           override: true
+      - name: Configure cache
+        uses: Swatinem/rust-cache@v1
       - name: Test
         uses: actions-rs/cargo@v1
         with:
@@ -43,6 +48,8 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - name: Configure cache
+        uses: Swatinem/rust-cache@v1
       - name: Run clippy
         uses: actions-rs/cargo@v1
         with:
