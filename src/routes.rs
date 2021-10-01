@@ -121,7 +121,7 @@ pub mod responses {
         type Body = Full<Bytes>;
         type BodyError = Infallible;
 
-        fn into_response(self) -> hyper::Response<Self::Body> {
+        fn into_response(self) -> Response<Self::Body> {
             match self.0.render() {
                 Ok(html) => response::Html(html).into_response(),
                 Err(_) => Response::builder()
