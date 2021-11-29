@@ -12,7 +12,7 @@ COPY Cargo.lock Cargo.toml ./
 RUN cargo build --release && \
     strip --strip-all target/release/findstream
 
-FROM alpine:3.14 as newuser
+FROM alpine:3.15.0 as newuser
 
 RUN echo "findstream:x:1000:" > /tmp/group && \
     echo "findstream:x:1000:1000::/dev/null:/sbin/nologin" > /tmp/passwd
