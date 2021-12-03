@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{handler::get, routing::BoxRoute, AddExtensionLayer, Router};
+use axum::{routing::get, AddExtensionLayer, Router};
 use tokio::sync::Mutex;
 use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
@@ -9,7 +9,7 @@ use crate::twitch::TwitchClient;
 
 type Client = Arc<Mutex<TwitchClient>>;
 
-pub fn build(client: Client) -> Router<BoxRoute> {
+pub fn build(client: Client) -> Router {
     Router::new()
         .route("/favicon-16x16.png", get(handlers::favicon_16))
         .route("/favicon-32x32.png", get(handlers::favicon_32))
@@ -22,8 +22,6 @@ pub fn build(client: Client) -> Router<BoxRoute> {
                 .layer(AddExtensionLayer::new(client))
                 .into_inner(),
         )
-        .check_infallible()
-        .boxed()
 }
 
 pub(super) mod handlers {
@@ -103,14 +101,13 @@ pub(super) mod handlers {
 }
 
 pub mod responses {
-    use std::convert::Infallible;
-
     use askama::Template;
     use axum::{
-        body::{Bytes, Full},
+        body::{self, BoxBody, Full},
         http::{Response, StatusCode},
         response::{self, IntoResponse},
     };
+    use tracing::error;
 
     pub struct HtmlTemplate<T>(pub T);
 
@@ -118,16 +115,16 @@ pub mod responses {
     where
         T: Template,
     {
-        type Body = Full<Bytes>;
-        type BodyError = Infallible;
-
-        fn into_response(self) -> Response<Self::Body> {
+        fn into_response(self) -> Response<BoxBody> {
             match self.0.render() {
                 Ok(html) => response::Html(html).into_response(),
-                Err(_) => Response::builder()
-                    .status(StatusCode::INTERNAL_SERVER_ERROR)
-                    .body(Full::default())
-                    .unwrap(),
+                Err(err) => {
+                    error!(?err, "failed rendering template");
+                    Response::builder()
+                        .status(StatusCode::INTERNAL_SERVER_ERROR)
+                        .body(body::boxed(Full::default()))
+                        .unwrap()
+                }
             }
         }
     }
