@@ -103,7 +103,7 @@ pub(super) mod handlers {
 pub mod responses {
     use askama::Template;
     use axum::{
-        body::{self, BoxBody, Full},
+        body::{self, BoxBody, Empty},
         http::{Response, StatusCode},
         response::{self, IntoResponse},
     };
@@ -122,7 +122,7 @@ pub mod responses {
                     error!(?err, "failed rendering template");
                     Response::builder()
                         .status(StatusCode::INTERNAL_SERVER_ERROR)
-                        .body(body::boxed(Full::default()))
+                        .body(body::boxed(Empty::default()))
                         .unwrap()
                 }
             }
