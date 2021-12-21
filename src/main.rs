@@ -22,7 +22,7 @@ const ADDRESS: [u8; 4] = [127, 0, 0, 1];
 #[cfg(not(debug_assertions))]
 const ADDRESS: [u8; 4] = [0, 0, 0, 0];
 
-#[tokio::main(flavor = "current_thread")]
+#[tokio::main]
 async fn main() -> Result<()> {
     env::set_var("RUST_LOG", "findstream=trace,warn");
     dotenv::dotenv().ok();
