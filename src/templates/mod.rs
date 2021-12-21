@@ -1,5 +1,5 @@
 use askama::Template;
-use chrono::prelude::*;
+use time::OffsetDateTime;
 
 use self::lang::translate_iso_639_1;
 use crate::twitch::Stream;
@@ -36,24 +36,24 @@ impl Results {
     }
 }
 
-fn since_now(value: &Option<DateTime<Utc>>) -> String {
+fn since_now(value: &Option<OffsetDateTime>) -> String {
     if let Some(value) = value {
-        let duration = Utc::now() - *value;
+        let duration = OffsetDateTime::now_utc() - *value;
         let mut buf = String::new();
 
-        match duration.num_days() {
+        match duration.whole_days() {
             0 => {}
             1 => buf.push_str("1 day"),
             d => buf.push_str(&format!("{} days", d)),
         }
 
-        match duration.num_hours() % 24 {
+        match duration.whole_hours() % 24 {
             0 => {}
             1 => buf.push_str(" 1 hour"),
             h => buf.push_str(&format!(" {} hours", h)),
         }
 
-        match duration.num_minutes() % 60 {
+        match duration.whole_minutes() % 60 {
             0 => {}
             1 => buf.push_str(" 1 minute"),
             m => buf.push_str(&format!(" {} minutes", m)),

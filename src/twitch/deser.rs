@@ -1,16 +1,16 @@
 use std::fmt;
 
-use chrono::{prelude::*, Duration};
 use serde::de;
+use time::{format_description::well_known::Rfc3339, Duration, OffsetDateTime};
 
-pub fn opt_datetime<'de, D>(d: D) -> Result<Option<DateTime<Utc>>, D::Error>
+pub fn opt_datetime<'de, D>(d: D) -> Result<Option<OffsetDateTime>, D::Error>
 where
     D: de::Deserializer<'de>,
 {
     struct Visitor;
 
     impl<'de> de::Visitor<'de> for Visitor {
-        type Value = Option<DateTime<Utc>>;
+        type Value = Option<OffsetDateTime>;
 
         fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
             formatter.write_str("UTC date time")
@@ -23,7 +23,9 @@ where
             if value.is_empty() {
                 Ok(None)
             } else {
-                Ok(Some(value.parse().map_err(E::custom)?))
+                Ok(Some(
+                    OffsetDateTime::parse(value, &Rfc3339).map_err(E::custom)?,
+                ))
             }
         }
 

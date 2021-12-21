@@ -1,16 +1,16 @@
 use anyhow::Result;
-use chrono::{prelude::*, Duration};
 use reqwest::{
     header::{self, HeaderMap},
     Client,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use time::{Duration, OffsetDateTime};
 use tracing::info;
 use url::Url;
 
 mod deser;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct SearchResponse {
     pub game_id: String,
     pub display_name: String,
@@ -18,10 +18,10 @@ pub struct SearchResponse {
     pub title: String,
     pub thumbnail_url: String,
     #[serde(deserialize_with = "deser::opt_datetime")]
-    pub started_at: Option<DateTime<Utc>>,
+    pub started_at: Option<OffsetDateTime>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Stream {
     pub id: String,
     pub user_id: String,
@@ -32,7 +32,7 @@ pub struct Stream {
     pub title: String,
     pub viewer_count: u64,
     #[serde(deserialize_with = "deser::opt_datetime")]
-    pub started_at: Option<DateTime<Utc>>,
+    pub started_at: Option<OffsetDateTime>,
     pub language: String,
     pub thumbnail_url: String,
 }
@@ -107,7 +107,7 @@ pub struct TwitchClient {
     client_id: String,
     client_secret: String,
     token: String,
-    exires_at: DateTime<Utc>,
+    exires_at: OffsetDateTime,
 }
 
 impl TwitchClient {
@@ -145,7 +145,7 @@ impl TwitchClient {
             client_id,
             client_secret,
             token,
-            exires_at: Utc::now() + resp.expires_in - Duration::days(1),
+            exires_at: OffsetDateTime::now_utc() + resp.expires_in - Duration::days(1),
         })
     }
 
@@ -170,7 +170,7 @@ impl TwitchClient {
     }
 
     pub async fn get_streams_all(&mut self, game_id: &str) -> Result<Vec<Stream>> {
-        if self.exires_at <= Utc::now() {
+        if self.exires_at <= OffsetDateTime::now_utc() {
             info!("Refreshing token");
             self.token = Self::get_token(&self.client_id, &self.client_secret)
                 .await?
