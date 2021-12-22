@@ -8,8 +8,8 @@ license = "AGPL-3.0-only"
 
 [dependencies]
 anyhow = "1.0.51"
-askama = { version = "0.10.5", default-features = false }
-axum = { version = "0.4.2", features = ["http2"] }
+askama = { version = "0.11.0", default-features = false }
+axum = { version = "0.4.3", features = ["http2"] }
 dotenv = "0.15.0"
 reqwest = { version = "0.11.8", default-features = false, features = ["json", "rustls-tls"] }
 serde = { version = "1.0.132", features = ["derive"] }

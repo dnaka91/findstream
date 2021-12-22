@@ -66,7 +66,7 @@ fn since_now(value: &Option<OffsetDateTime>) -> String {
 }
 
 #[allow(clippy::pedantic)]
-fn sized(value: &str, width: &u32, height: &u32) -> String {
+fn sized(value: &str, width: u32, height: u32) -> String {
     value
         .replace("{width}", &width.to_string())
         .replace("{height}", &height.to_string())
