@@ -1,7 +1,8 @@
 use std::fs;
 
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use serde::Deserialize;
+use unidirs::{Directories, UnifiedDirs};
 
 #[derive(Deserialize)]
 pub struct Settings {
@@ -10,15 +11,13 @@ pub struct Settings {
 }
 
 pub fn load() -> Result<Settings> {
-    let locations = &[
-        concat!("/etc/", env!("CARGO_PKG_NAME"), "/config.toml"),
-        concat!("/app/", env!("CARGO_PKG_NAME"), ".toml"),
-        concat!(env!("CARGO_PKG_NAME"), ".toml"),
-    ];
-    let buf = locations.iter().find_map(|loc| fs::read(loc).ok());
+    let path = UnifiedDirs::simple("rocks", "dnaka91", env!("CARGO_PKG_NAME"))
+        .default()
+        .context("failed finding project directories")?
+        .config_dir()
+        .join("config.toml");
 
-    match buf {
-        Some(buf) => Ok(toml::from_slice(&buf)?),
-        None => bail!("failed finding settings"),
-    }
+    let buf = fs::read(path).context("failed reading settings file")?;
+
+    toml::from_slice(&buf).context("failed parsing settings")
 }
