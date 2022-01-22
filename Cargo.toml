@@ -7,19 +7,18 @@ rust-version = "1.56"
 license = "AGPL-3.0-only"
 
 [dependencies]
-anyhow = "1.0.52"
+anyhow = "1.0.53"
 askama = { version = "0.11.0", default-features = false }
 axum = { version = "0.4.4", features = ["http2"] }
-dotenv = "0.15.0"
 reqwest = { version = "0.11.9", default-features = false, features = ["json", "rustls-tls"] }
-serde = { version = "1.0.133", features = ["derive"] }
-time = { version = "0.3.5", features = ["parsing"] }
+serde = { version = "1.0.134", features = ["derive"] }
+time = { version = "0.3.6", features = ["parsing"] }
 tokio = { version = "1.15.0", features = ["macros", "rt-multi-thread", "signal"] }
 toml = "0.5.8"
 tower = "0.4.11"
-tower-http = { version = "0.2.0", features = ["compression-gzip", "decompression-gzip", "trace"] }
+tower-http = { version = "0.2.1", features = ["compression-gzip", "decompression-gzip", "trace"] }
 tracing = "0.1.29"
-tracing-subscriber = "0.3.5"
+tracing-subscriber = "0.3.6"
 unidirs = "0.1.0"
 url = "2.2.2"
 

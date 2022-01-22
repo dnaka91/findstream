@@ -3,12 +3,13 @@
 #![warn(clippy::nursery)]
 #![allow(clippy::module_name_repetitions, clippy::option_if_let_else)]
 
-use std::{env, net::SocketAddr, sync::Arc};
+use std::{env, net::{SocketAddr,Ipv4Addr}, sync::Arc};
 
 use anyhow::Result;
 use axum::Server;
 use tokio::{signal, sync::Mutex};
-use tracing::info;
+use tracing::{info, Level};
+use tracing_subscriber::{prelude::*, filter::Targets};
 
 use crate::twitch::TwitchClient;
 
@@ -18,15 +19,23 @@ mod templates;
 mod twitch;
 
 #[cfg(debug_assertions)]
-const ADDRESS: [u8; 4] = [127, 0, 0, 1];
-#[cfg(not(debug_assertions))]
-const ADDRESS: [u8; 4] = [0, 0, 0, 0];
+const ADDRESS: Ipv4Addr = if cfg!(debug_assertions) {
+    Ipv4Addr::LOCALHOST
+} else {
+    Ipv4Addr::UNSPECIFIED
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env::set_var("RUST_LOG", "findstream=trace,warn");
-    dotenv::dotenv().ok();
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::fmt::layer())
+        .with(
+            Targets::new()
+                .with_target(env!("CARGO_PKG_NAME"), Level::TRACE)
+                .with_target("tower_http", Level::TRACE)
+                .with_default(Level::INFO),
+        )
+        .init();
 
     let settings = settings::load()?;
     let client = TwitchClient::new(settings.client_id, settings.client_secret).await?;
