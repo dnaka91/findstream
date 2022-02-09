@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use axum::{routing::get, AddExtensionLayer, Router};
+use axum::{
+    routing::{get, post},
+    AddExtensionLayer, Router,
+};
 use tokio::sync::Mutex;
 use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
@@ -11,6 +14,10 @@ type Client = Arc<Mutex<TwitchClient>>;
 
 pub fn build(client: Client) -> Router {
     Router::new()
+        .nest(
+            "/api",
+            Router::new().route("/search", post(handlers::api::search)),
+        )
         .route("/favicon-16x16.png", get(handlers::favicon_16))
         .route("/favicon-32x32.png", get(handlers::favicon_32))
         .route("/", get(handlers::index))
@@ -24,7 +31,7 @@ pub fn build(client: Client) -> Router {
         )
 }
 
-pub(super) mod handlers {
+pub mod handlers {
     #![allow(clippy::unused_async)]
 
     use axum::{
@@ -37,32 +44,36 @@ pub(super) mod handlers {
     use tracing::error;
 
     use super::{responses::HtmlTemplate, Client};
-    use crate::{templates, twitch::Category};
+    use crate::{
+        templates,
+        twitch::{Category, Stream},
+    };
 
     #[derive(Deserialize)]
-    pub(super) struct SearchParams {
+    pub struct SearchParams {
         category: Category,
         query: String,
+        #[serde(default)]
         language: String,
     }
 
-    pub(super) async fn index() -> impl IntoResponse {
+    pub async fn index() -> impl IntoResponse {
         HtmlTemplate(templates::Index)
     }
 
-    pub(super) async fn favicon_32() -> impl IntoResponse {
+    pub async fn favicon_32() -> impl IntoResponse {
         Response::new(Body::from(
             &include_bytes!("../assets/favicon-32x32.png")[..],
         ))
     }
 
-    pub(super) async fn favicon_16() -> impl IntoResponse {
+    pub async fn favicon_16() -> impl IntoResponse {
         Response::new(Body::from(
             &include_bytes!("../assets/favicon-16x16.png")[..],
         ))
     }
 
-    pub(super) async fn search(
+    pub async fn search(
         Query(params): Query<SearchParams>,
         Extension(client): Extension<Client>,
     ) -> impl IntoResponse {
@@ -80,23 +91,93 @@ pub(super) mod handlers {
             }
         };
 
-        let query_words = params
-            .query
+        let words = create_query_words(&params.query);
+        let streams = filter_streams(resp, &words, &params.language, |s| s);
+
+        HtmlTemplate(templates::Results::new(words, streams))
+    }
+
+    pub mod api {
+        use axum::{extract::Extension, http::StatusCode, response::IntoResponse, Json};
+        use serde::Serialize;
+        use time::OffsetDateTime;
+        use tracing::error;
+
+        use super::{create_query_words, filter_streams, SearchParams};
+        use crate::{lang, routes::Client, twitch::Stream};
+
+        #[derive(Serialize)]
+        struct Response {
+            title: String,
+            username: String,
+            language: String,
+            stream_time: Option<i64>,
+            viewer_count: u64,
+        }
+
+        impl From<Stream> for Response {
+            fn from(stream: Stream) -> Self {
+                Self {
+                    title: stream.title,
+                    username: stream.user_name,
+                    language: lang::translate_iso_639_1(&stream.language).to_owned(),
+                    stream_time: stream
+                        .started_at
+                        .map(|started_at| (OffsetDateTime::now_utc() - started_at).whole_seconds()),
+                    viewer_count: stream.viewer_count,
+                }
+            }
+        }
+
+        pub async fn search(
+            Json(params): Json<SearchParams>,
+            Extension(client): Extension<Client>,
+        ) -> impl IntoResponse {
+            let resp = client
+                .lock()
+                .await
+                .get_streams_all(params.category.game_id())
+                .await;
+
+            let resp = match resp {
+                Ok(resp) => resp,
+                Err(e) => {
+                    error!("failed querying twitch: {:?}", e);
+                    return Err(StatusCode::INTERNAL_SERVER_ERROR);
+                }
+            };
+
+            let words = create_query_words(&params.query);
+            let streams = filter_streams(resp, &words, &params.language, Response::from);
+
+            Ok(Json(streams))
+        }
+    }
+
+    fn create_query_words(query: &str) -> Vec<String> {
+        query
             .split_whitespace()
             .map(str::to_lowercase)
-            .collect::<Vec<_>>();
+            .collect::<Vec<_>>()
+    }
 
-        let streams = resp
+    fn filter_streams<T>(
+        streams: Vec<Stream>,
+        words: &[String],
+        language: &str,
+        map: impl Fn(Stream) -> T,
+    ) -> Vec<T> {
+        streams
             .into_iter()
-            .filter(|r| {
-                let title = r.title.to_lowercase();
+            .filter_map(|stream| {
+                let title = stream.title.to_lowercase();
 
-                query_words.iter().any(|w| title.contains(w))
-                    && (params.language.is_empty() || r.language == params.language)
+                let is_match = words.iter().any(|w| title.contains(w))
+                    && (language.is_empty() || stream.language == language);
+
+                is_match.then(|| map(stream))
             })
-            .collect();
-
-        HtmlTemplate(templates::Results::new(query_words, streams))
+            .collect()
     }
 }
 

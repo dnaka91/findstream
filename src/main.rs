@@ -19,6 +19,7 @@ use tracing_subscriber::{filter::Targets, prelude::*};
 
 use crate::twitch::TwitchClient;
 
+mod lang;
 mod routes;
 mod settings;
 mod templates;

@@ -1,5 +1,5 @@
 #[allow(clippy::too_many_lines)]
-pub(super) fn translate_iso_639_1(code: &str) -> &str {
+pub fn translate_iso_639_1(code: &str) -> &str {
     match code {
         "aa" => "Afar",
         "ab" => "Abkhazian",

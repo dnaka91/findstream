@@ -1,10 +1,7 @@
 use askama::Template;
 use time::OffsetDateTime;
 
-use self::lang::translate_iso_639_1;
 use crate::twitch::Stream;
-
-mod lang;
 
 #[derive(Template)]
 #[template(path = "index.html")]
