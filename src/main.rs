@@ -3,13 +3,19 @@
 #![warn(clippy::nursery)]
 #![allow(clippy::module_name_repetitions, clippy::option_if_let_else)]
 
-use std::{env, net::{SocketAddr,Ipv4Addr}, sync::Arc};
+use std::{
+    env,
+    future::Future,
+    net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
+    sync::Arc,
+};
 
 use anyhow::Result;
-use axum::Server;
-use tokio::{signal, sync::Mutex};
+use axum::{routing::IntoMakeService, Router, Server};
+use tokio::sync::Mutex;
+use tokio_shutdown::Shutdown;
 use tracing::{info, Level};
-use tracing_subscriber::{prelude::*, filter::Targets};
+use tracing_subscriber::{filter::Targets, prelude::*};
 
 use crate::twitch::TwitchClient;
 
@@ -18,11 +24,16 @@ mod settings;
 mod templates;
 mod twitch;
 
-#[cfg(debug_assertions)]
-const ADDRESS: Ipv4Addr = if cfg!(debug_assertions) {
+const ADDRESS_V4: Ipv4Addr = if cfg!(debug_assertions) {
     Ipv4Addr::LOCALHOST
 } else {
     Ipv4Addr::UNSPECIFIED
+};
+
+const ADDRESS_V6: Ipv6Addr = if cfg!(debug_assertions) {
+    Ipv6Addr::LOCALHOST
+} else {
+    Ipv6Addr::UNSPECIFIED
 };
 
 #[tokio::main]
@@ -31,7 +42,7 @@ async fn main() -> Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .with(
             Targets::new()
-                .with_target(env!("CARGO_PKG_NAME"), Level::TRACE)
+                .with_target(env!("CARGO_CRATE_NAME"), Level::TRACE)
                 .with_target("tower_http", Level::TRACE)
                 .with_default(Level::INFO),
         )
@@ -41,20 +52,34 @@ async fn main() -> Result<()> {
     let client = TwitchClient::new(settings.client_id, settings.client_secret).await?;
     let client = Arc::new(Mutex::new(client));
 
-    let addr = SocketAddr::from((ADDRESS, 8080));
+    let app = routes::build(client).into_make_service();
 
-    let server = Server::try_bind(&addr)?
-        .serve(routes::build(client).into_make_service())
-        .with_graceful_shutdown(shutdown());
+    let shutdown = Shutdown::new()?;
 
-    info!("Listening on {}", addr);
+    let server_v4 = build_server(ADDRESS_V4.into(), &shutdown, app.clone())?;
+    let server_v6 = build_server(ADDRESS_V6.into(), &shutdown, app)?;
 
-    server.await?;
+    let (res_v4, res_v6) = tokio::join!(tokio::spawn(server_v4), tokio::spawn(server_v6));
+
+    res_v4??;
+    res_v6??;
 
     Ok(())
 }
 
-async fn shutdown() {
-    signal::ctrl_c().await.ok();
-    info!("Shutting down");
+fn build_server(
+    addr: IpAddr,
+    shutdown: &Shutdown,
+    service: IntoMakeService<Router>,
+) -> Result<impl Future<Output = Result<()>>> {
+    let addr = SocketAddr::from((addr, 8080));
+
+    let server = Server::try_bind(&addr)?
+        .serve(service)
+        .with_graceful_shutdown(shutdown.handle());
+
+    Ok(async move {
+        info!("Listening on {}", addr);
+        server.await.map_err(Into::into)
+    })
 }
