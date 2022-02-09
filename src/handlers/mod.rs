@@ -29,6 +29,10 @@ pub async fn index() -> impl IntoResponse {
     HtmlTemplate(templates::Index)
 }
 
+pub async fn api_info() -> impl IntoResponse {
+    HtmlTemplate(templates::ApiInfo)
+}
+
 pub async fn favicon_32() -> impl IntoResponse {
     Response::new(Body::from(
         &include_bytes!("../../assets/favicon-32x32.png")[..],

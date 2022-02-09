@@ -8,6 +8,10 @@ use crate::twitch::Stream;
 pub struct Index;
 
 #[derive(Template)]
+#[template(path = "api_info.html")]
+pub struct ApiInfo;
+
+#[derive(Template)]
 #[template(path = "results.html")]
 pub struct Results {
     query_words: Vec<String>,
