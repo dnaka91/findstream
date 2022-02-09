@@ -33,11 +33,11 @@ const ADDRESS_V4: Ipv4Addr = if cfg!(debug_assertions) {
     Ipv4Addr::UNSPECIFIED
 };
 
-const ADDRESS_V6: Ipv6Addr = if cfg!(debug_assertions) {
-    Ipv6Addr::LOCALHOST
-} else {
-    Ipv6Addr::UNSPECIFIED
-};
+// const ADDRESS_V6: Ipv6Addr = if cfg!(debug_assertions) {
+//     Ipv6Addr::LOCALHOST
+// } else {
+//     Ipv6Addr::UNSPECIFIED
+// };
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -60,12 +60,12 @@ async fn main() -> Result<()> {
     let shutdown = Shutdown::new()?;
 
     let server_v4 = build_server(ADDRESS_V4.into(), &shutdown, app.clone())?;
-    let server_v6 = build_server(ADDRESS_V6.into(), &shutdown, app)?;
+    // let server_v6 = build_server(ADDRESS_V6.into(), &shutdown, app)?;
 
-    let (res_v4, res_v6) = tokio::join!(tokio::spawn(server_v4), tokio::spawn(server_v6));
+    let (res_v4,) = tokio::join!(tokio::spawn(server_v4));
 
     res_v4??;
-    res_v6??;
+    // res_v6??;
 
     Ok(())
 }
