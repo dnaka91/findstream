@@ -17,9 +17,11 @@ use tokio_shutdown::Shutdown;
 use tracing::{info, Level};
 use tracing_subscriber::{filter::Targets, prelude::*};
 
-use crate::twitch::TwitchClient;
+use crate::twitch::Client;
 
+mod handlers;
 mod lang;
+mod responses;
 mod routes;
 mod settings;
 mod templates;
@@ -50,7 +52,7 @@ async fn main() -> Result<()> {
         .init();
 
     let settings = settings::load()?;
-    let client = TwitchClient::new(settings.client_id, settings.client_secret).await?;
+    let client = Client::new(settings.client_id, settings.client_secret).await?;
     let client = Arc::new(Mutex::new(client));
 
     let app = routes::build(client).into_make_service();

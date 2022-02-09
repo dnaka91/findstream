@@ -1,10 +1,13 @@
+use std::sync::Arc;
+
 use anyhow::Result;
 use reqwest::{
     header::{self, HeaderMap},
-    Client,
+    Client as HttpClient,
 };
 use serde::Deserialize;
 use time::{Duration, OffsetDateTime};
+use tokio::sync::Mutex;
 use tracing::info;
 use url::Url;
 
@@ -102,15 +105,17 @@ impl Category {
     }
 }
 
-pub struct TwitchClient {
-    client: Client,
+pub type AsyncClient = Arc<Mutex<Client>>;
+
+pub struct Client {
+    client: HttpClient,
     client_id: String,
     client_secret: String,
     token: String,
     exires_at: OffsetDateTime,
 }
 
-impl TwitchClient {
+impl Client {
     pub async fn get_token(client_id: &str, client_secret: &str) -> Result<AuthResponse> {
         let mut url = Url::parse("https://id.twitch.tv/oauth2/token").unwrap();
         url.query_pairs_mut()
@@ -119,7 +124,7 @@ impl TwitchClient {
             .append_pair("grant_type", "client_credentials")
             .append_pair("scope", "");
 
-        let resp = Client::new()
+        let resp = HttpClient::new()
             .post(url)
             .send()
             .await?
@@ -141,7 +146,7 @@ impl TwitchClient {
         headers.insert("Client-Id", client_id.parse()?);
 
         Ok(Self {
-            client: Client::builder().default_headers(headers).build()?,
+            client: HttpClient::builder().default_headers(headers).build()?,
             client_id,
             client_secret,
             token,
