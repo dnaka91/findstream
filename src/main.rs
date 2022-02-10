@@ -55,7 +55,7 @@ async fn main() -> Result<()> {
         .serve(routes::build(client).into_make_service())
         .with_graceful_shutdown(shutdown.handle());
 
-    info!("Listening on {}", addr);
+    info!("listening on {}", addr);
 
     server.await?;
 

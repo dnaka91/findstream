@@ -136,7 +136,7 @@ impl Client {
     }
 
     pub async fn new(client_id: String, client_secret: String) -> Result<Self> {
-        info!("Getting initial token");
+        info!("getting initial token");
 
         let resp = Self::get_token(&client_id, &client_secret).await?;
         let token = resp.access_token;
@@ -176,7 +176,7 @@ impl Client {
 
     pub async fn get_streams_all(&mut self, game_id: &str) -> Result<Vec<Stream>> {
         if self.exires_at <= OffsetDateTime::now_utc() {
-            info!("Refreshing token");
+            info!("refreshing token");
             self.token = Self::get_token(&self.client_id, &self.client_secret)
                 .await?
                 .access_token;
