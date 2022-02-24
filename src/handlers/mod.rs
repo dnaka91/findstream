@@ -12,7 +12,6 @@ use serde::Deserialize;
 use tracing::error;
 
 use crate::{
-    responses::HtmlTemplate,
     templates,
     twitch::{AsyncClient, Category, Stream},
 };
@@ -26,11 +25,11 @@ pub struct SearchParams {
 }
 
 pub async fn index() -> impl IntoResponse {
-    HtmlTemplate(templates::Index)
+    templates::Index
 }
 
 pub async fn api_info() -> impl IntoResponse {
-    HtmlTemplate(templates::ApiInfo)
+    templates::ApiInfo
 }
 
 pub async fn favicon_32() -> impl IntoResponse {
@@ -59,14 +58,14 @@ pub async fn search(
         Ok(resp) => resp,
         Err(e) => {
             error!("failed querying twitch: {:?}", e);
-            return HtmlTemplate(templates::Results::error());
+            return templates::Results::error();
         }
     };
 
     let words = create_query_words(&params.query);
     let streams = filter_streams(resp, &words, &params.language, |s| s);
 
-    HtmlTemplate(templates::Results::new(words, streams))
+    templates::Results::new(words, streams)
 }
 
 fn create_query_words(query: &str) -> Vec<String> {
