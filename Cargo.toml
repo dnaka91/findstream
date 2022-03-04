@@ -3,7 +3,6 @@ name = "findstream"
 version = "0.2.0"
 authors = ["Dominik Nakamura <dnaka91@gmail.com>"]
 edition = "2021"
-rust-version = "1.56"
 license = "AGPL-3.0-only"
 
 [dependencies]
@@ -26,3 +25,4 @@ url = "2.2.2"
 
 [profile.release]
 lto = true
+strip = true

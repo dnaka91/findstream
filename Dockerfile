@@ -1,4 +1,4 @@
-FROM rust:1.58-alpine as builder
+FROM rust:1.59-alpine as builder
 
 WORKDIR /volume
 
@@ -9,8 +9,7 @@ COPY src/ src/
 COPY templates/ templates/
 COPY Cargo.lock Cargo.toml ./
 
-RUN cargo build --release && \
-    strip --strip-all target/release/findstream
+RUN cargo build --release
 
 FROM alpine:3.15 as newuser
 
