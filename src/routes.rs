@@ -1,6 +1,7 @@
 use axum::{
+    extract::Extension,
     routing::{get, post},
-    AddExtensionLayer, Router,
+    Router,
 };
 use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
@@ -19,7 +20,7 @@ pub fn build(client: AsyncClient) -> Router {
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
                 .layer(CompressionLayer::new())
-                .layer(AddExtensionLayer::new(client))
+                .layer(Extension(client))
                 .into_inner(),
         )
 }
