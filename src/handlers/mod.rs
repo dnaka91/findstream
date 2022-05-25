@@ -5,8 +5,9 @@ pub mod api;
 use axum::{
     body::Body,
     extract::{Extension, Query},
-    http::Response,
+    http::{Response, StatusCode},
     response::IntoResponse,
+    BoxError,
 };
 use serde::Deserialize;
 use tracing::error;
@@ -92,4 +93,18 @@ fn filter_streams<T>(
             is_match.then(|| map(stream))
         })
         .collect()
+}
+
+pub async fn error(err: BoxError) -> (StatusCode, &'static str) {
+    if err.is::<tower::load_shed::error::Overloaded>() {
+        (
+            StatusCode::SERVICE_UNAVAILABLE,
+            "service is overloaded, try again later",
+        )
+    } else if err.is::<tower::timeout::error::Elapsed>() {
+        (StatusCode::REQUEST_TIMEOUT, "request timed out")
+    } else {
+        error!(?err, "unhandled error");
+        (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+    }
 }

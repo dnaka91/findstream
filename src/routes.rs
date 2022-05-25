@@ -1,10 +1,13 @@
+use std::time::Duration;
+
 use axum::{
+    error_handling::HandleErrorLayer,
     extract::Extension,
     routing::{get, post},
     Router,
 };
 use tower::ServiceBuilder;
-use tower_http::{compression::CompressionLayer, trace::TraceLayer};
+use tower_http::ServiceBuilderExt;
 
 use crate::{handlers, twitch::AsyncClient};
 
@@ -18,8 +21,12 @@ pub fn build(client: AsyncClient) -> Router {
         .route("/search", get(handlers::search))
         .layer(
             ServiceBuilder::new()
-                .layer(TraceLayer::new_for_http())
-                .layer(CompressionLayer::new())
+                .layer(HandleErrorLayer::new(handlers::error))
+                .load_shed()
+                .concurrency_limit(100)
+                .timeout(Duration::from_secs(15))
+                .trace_for_http()
+                .compression()
                 .layer(Extension(client))
                 .into_inner(),
         )
