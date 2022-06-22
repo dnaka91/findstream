@@ -20,6 +20,7 @@ use crate::twitch::Client;
 
 mod handlers;
 mod lang;
+mod middleware;
 mod routes;
 mod settings;
 mod templates;

@@ -6,17 +6,17 @@ edition = "2021"
 license = "AGPL-3.0-only"
 
 [dependencies]
-anyhow = "1.0.57"
+anyhow = "1.0.58"
 askama = { version = "0.11.1", git = "https://github.com/djc/askama.git", default-features = false, features = ["with-axum"] }
 askama_axum = { version = "0.1.0", git = "https://github.com/djc/askama.git" }
-axum = { version = "0.5.7", features = ["http2"] }
-reqwest = { version = "0.11.10", default-features = false, features = ["json", "rustls-tls"] }
+axum = { version = "0.5.9", features = ["http2"] }
+reqwest = { version = "0.11.11", default-features = false, features = ["json", "rustls-tls"] }
 serde = { version = "1.0.137", features = ["derive"] }
-time = { version = "0.3.9", features = ["parsing"] }
+time = { version = "0.3.11", features = ["parsing"] }
 tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread"] }
 tokio-shutdown = "0.1.2"
 toml = "0.5.9"
-tower = { version = "0.4.12", features = ["limit", "load-shed", "timeout"] }
+tower = { version = "0.4.13", features = ["limit", "load-shed", "timeout"] }
 tower-http = { version = "0.3.4", features = ["compression-gzip", "decompression-gzip", "trace"] }
 tracing = "0.1.35"
 tracing-subscriber = "0.3.11"
