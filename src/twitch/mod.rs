@@ -11,6 +11,8 @@ use tokio::sync::Mutex;
 use tracing::info;
 use url::Url;
 
+use crate::settings;
+
 mod deser;
 
 #[derive(Debug, Deserialize)]
@@ -135,7 +137,12 @@ impl Client {
         Ok(resp)
     }
 
-    pub async fn new(client_id: String, client_secret: String) -> Result<Self> {
+    pub async fn new(
+        settings::Twitch {
+            client_id,
+            client_secret,
+        }: settings::Twitch,
+    ) -> Result<Self> {
         info!("getting initial token");
 
         let resp = Self::get_token(&client_id, &client_secret).await?;

@@ -9,9 +9,9 @@ use axum::{
 use tower::ServiceBuilder;
 use tower_http::ServiceBuilderExt;
 
-use crate::{handlers, twitch::AsyncClient};
+use crate::{handlers, settings, twitch::AsyncClient};
 
-pub fn build(client: AsyncClient) -> Router {
+pub fn build(client: AsyncClient, settings: &settings::Server) -> Router {
     Router::new()
         .nest("/api", api())
         .route("/favicon-16x16.png", get(handlers::favicon_16))
@@ -23,8 +23,8 @@ pub fn build(client: AsyncClient) -> Router {
             ServiceBuilder::new()
                 .layer(HandleErrorLayer::new(handlers::error))
                 .load_shed()
-                .concurrency_limit(100)
-                .timeout(Duration::from_secs(15))
+                .concurrency_limit(settings.concurrency_limit.unwrap_or(100))
+                .timeout(settings.timeout.unwrap_or(Duration::from_secs(15)))
                 .trace_for_http()
                 .compression()
                 .layer(Extension(client))

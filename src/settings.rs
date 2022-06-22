@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, time::Duration};
 
 use anyhow::{Context, Result};
 use serde::Deserialize;
@@ -6,6 +6,21 @@ use unidirs::{Directories, UnifiedDirs};
 
 #[derive(Deserialize)]
 pub struct Settings {
+    #[serde(default)]
+    pub server: Server,
+    pub twitch: Twitch,
+}
+
+#[derive(Default, Deserialize)]
+pub struct Server {
+    #[serde(default)]
+    pub concurrency_limit: Option<usize>,
+    #[serde(default)]
+    pub timeout: Option<Duration>,
+}
+
+#[derive(Deserialize)]
+pub struct Twitch {
     pub client_id: String,
     pub client_secret: String,
 }

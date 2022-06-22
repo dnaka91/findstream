@@ -45,13 +45,13 @@ async fn main() -> Result<()> {
 
     let settings = settings::load()?;
     let shutdown = Shutdown::new()?;
-    let client = Client::new(settings.client_id, settings.client_secret).await?;
+    let client = Client::new(settings.twitch).await?;
     let client = Arc::new(Mutex::new(client));
 
     let addr = SocketAddr::from((ADDRESS, 8080));
 
     let server = Server::try_bind(&addr)?
-        .serve(routes::build(client).into_make_service())
+        .serve(routes::build(client, &settings.server).into_make_service())
         .with_graceful_shutdown(shutdown.handle());
 
     info!("listening on {}", addr);
