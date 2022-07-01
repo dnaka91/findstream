@@ -1,3 +1,5 @@
+use std::fmt::Write;
+
 use askama::Template;
 use time::OffsetDateTime;
 
@@ -45,19 +47,19 @@ fn since_now(value: &Option<OffsetDateTime>) -> String {
         match duration.whole_days() {
             0 => {}
             1 => buf.push_str("1 day"),
-            d => buf.push_str(&format!("{} days", d)),
+            d => write!(buf, "{d} days").unwrap(),
         }
 
         match duration.whole_hours() % 24 {
             0 => {}
             1 => buf.push_str(" 1 hour"),
-            h => buf.push_str(&format!(" {} hours", h)),
+            h => write!(buf, " {h} hours").unwrap(),
         }
 
         match duration.whole_minutes() % 60 {
             0 => {}
             1 => buf.push_str(" 1 minute"),
-            m => buf.push_str(&format!(" {} minutes", m)),
+            m => write!(buf, " {m} minutes").unwrap(),
         }
 
         buf

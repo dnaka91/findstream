@@ -149,7 +149,7 @@ impl Client {
         let token = resp.access_token;
 
         let mut headers = HeaderMap::new();
-        headers.insert(header::AUTHORIZATION, format!("Bearer {}", token).parse()?);
+        headers.insert(header::AUTHORIZATION, format!("Bearer {token}").parse()?);
         headers.insert("Client-Id", client_id.parse()?);
 
         Ok(Self {

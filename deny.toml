@@ -24,10 +24,5 @@ license-files = [
     { path = "LICENSE", hash = 0xbd0eed23 },
 ]
 
-[bans]
-skip = [
-	{ name = "wasi", version = "=0.10.2" },
-]
-
 [sources]
 allow-git = ["https://github.com/djc/askama.git"]
