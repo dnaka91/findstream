@@ -10,14 +10,14 @@ use axum::{
     BoxError,
 };
 use serde::Deserialize;
-use tracing::error;
+use tracing::{error, instrument};
 
 use crate::{
     templates,
     twitch::{AsyncClient, Category, Stream},
 };
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct SearchParams {
     category: Category,
     query: String,
@@ -25,26 +25,31 @@ pub struct SearchParams {
     language: String,
 }
 
+#[instrument]
 pub async fn index() -> impl IntoResponse {
     templates::Index
 }
 
+#[instrument]
 pub async fn api_info() -> impl IntoResponse {
     templates::ApiInfo
 }
 
+#[instrument]
 pub async fn favicon_32() -> impl IntoResponse {
     Response::new(Body::from(
         &include_bytes!("../../assets/favicon-32x32.png")[..],
     ))
 }
 
+#[instrument]
 pub async fn favicon_16() -> impl IntoResponse {
     Response::new(Body::from(
         &include_bytes!("../../assets/favicon-16x16.png")[..],
     ))
 }
 
+#[instrument(skip(client))]
 pub async fn search(
     Query(params): Query<SearchParams>,
     Extension(client): Extension<AsyncClient>,

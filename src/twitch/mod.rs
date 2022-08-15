@@ -8,7 +8,7 @@ use reqwest::{
 use serde::Deserialize;
 use time::{Duration, OffsetDateTime};
 use tokio::sync::Mutex;
-use tracing::info;
+use tracing::{info, instrument};
 use url::Url;
 
 use crate::settings;
@@ -60,7 +60,7 @@ pub struct Pagination {
     pub cursor: Option<String>,
 }
 
-#[derive(Copy, Clone, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize)]
 pub enum Category {
     Art,
     BeautyAndBodyArt,
@@ -118,6 +118,7 @@ pub struct Client {
 }
 
 impl Client {
+    #[instrument(skip_all)]
     pub async fn get_token(client_id: &str, client_secret: &str) -> Result<AuthResponse> {
         let mut url = Url::parse("https://id.twitch.tv/oauth2/token").unwrap();
         url.query_pairs_mut()
@@ -161,6 +162,7 @@ impl Client {
         })
     }
 
+    #[instrument(skip(self, after))]
     async fn get_streams(&self, game_id: &str, after: Option<&str>) -> Result<Response<Stream>> {
         let mut url = Url::parse("https://api.twitch.tv/helix/streams").unwrap();
         url.query_pairs_mut()
@@ -181,6 +183,7 @@ impl Client {
             .map_err(Into::into)
     }
 
+    #[instrument(skip(self))]
     pub async fn get_streams_all(&mut self, game_id: &str) -> Result<Vec<Stream>> {
         if self.exires_at <= OffsetDateTime::now_utc() {
             info!("refreshing token");

@@ -5,7 +5,8 @@ allow = [
 ]
 allow-osi-fsf-free = "both"
 exceptions = [
-    { allow = ["AGPL-3.0"], name = "findstream", version = "*" },
+    { allow = ["AGPL-3.0"], name = "findstream" },
+    { allow = ["Unicode-DFS-2016"], name = "unicode-ident" },
 ]
 
 [[licenses.clarify]]

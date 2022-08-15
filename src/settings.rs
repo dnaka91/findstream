@@ -9,6 +9,8 @@ pub struct Settings {
     #[serde(default)]
     pub server: Server,
     pub twitch: Twitch,
+    #[serde(default)]
+    pub tracing: Tracing,
 }
 
 #[derive(Default, Deserialize)]
@@ -23,6 +25,19 @@ pub struct Server {
 pub struct Twitch {
     pub client_id: String,
     pub client_secret: String,
+}
+
+#[derive(Default, Deserialize)]
+pub struct Tracing {
+    #[serde(default)]
+    pub jaeger: Option<Jaeger>,
+}
+
+#[derive(Deserialize)]
+pub struct Jaeger {
+    pub host: String,
+    #[serde(default)]
+    pub port: Option<u16>,
 }
 
 pub fn load() -> Result<Settings> {
