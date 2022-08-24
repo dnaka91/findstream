@@ -30,14 +30,12 @@ pub struct Twitch {
 #[derive(Default, Deserialize)]
 pub struct Tracing {
     #[serde(default)]
-    pub jaeger: Option<Jaeger>,
+    pub otlp: Option<Otlp>,
 }
 
 #[derive(Deserialize)]
-pub struct Jaeger {
-    pub host: String,
-    #[serde(default)]
-    pub port: Option<u16>,
+pub struct Otlp {
+    pub endpoint: String,
 }
 
 pub fn load() -> Result<Settings> {

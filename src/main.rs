@@ -11,7 +11,7 @@ use std::{
 
 use anyhow::Result;
 use axum::Server;
-use settings::Jaeger;
+use settings::Otlp;
 use tokio::sync::Mutex;
 use tokio_shutdown::Shutdown;
 use tracing::{error, info, Level, Subscriber};
@@ -39,7 +39,7 @@ async fn main() -> Result<()> {
 
     tracing_subscriber::registry()
         .with(tracing_subscriber::fmt::layer())
-        .with(settings.tracing.jaeger.map(init_tracing).transpose()?)
+        .with(settings.tracing.otlp.map(init_tracing).transpose()?)
         .with(
             Targets::new()
                 .with_target(env!("CARGO_CRATE_NAME"), Level::TRACE)
@@ -65,21 +65,32 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-fn init_tracing<S>(setting: Jaeger) -> Result<impl Layer<S>>
+fn init_tracing<S>(settings: Otlp) -> Result<impl Layer<S>>
 where
     for<'span> S: Subscriber + LookupSpan<'span>,
 {
-    use opentelemetry::{global, runtime};
-    use opentelemetry_jaeger::Propagator;
+    use opentelemetry::{
+        global, runtime,
+        sdk::{trace, Resource},
+    };
+    use opentelemetry_otlp::WithExportConfig;
+    use opentelemetry_semantic_conventions::resource;
 
-    global::set_text_map_propagator(Propagator::new());
     global::set_error_handler(|error| {
         error!(target:"opentelemetry", %error);
     })?;
 
-    let tracer = opentelemetry_jaeger::new_pipeline()
-        .with_service_name(env!("CARGO_CRATE_NAME"))
-        .with_agent_endpoint((setting.host, setting.port.unwrap_or(6831)))
+    let tracer = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(
+            opentelemetry_otlp::new_exporter()
+                .tonic()
+                .with_endpoint(settings.endpoint),
+        )
+        .with_trace_config(trace::config().with_resource(Resource::new([
+            resource::SERVICE_NAME.string(env!("CARGO_CRATE_NAME")),
+            resource::SERVICE_VERSION.string(env!("CARGO_PKG_VERSION")),
+        ])))
         .install_batch(runtime::Tokio)?;
 
     Ok(tracing_opentelemetry::layer().with_tracer(tracer))
