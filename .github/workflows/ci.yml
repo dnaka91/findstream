@@ -12,6 +12,15 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
+      - name: Install Protobuf (ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get -y install protobuf-compiler
+      - name: Install Protobuf (macos)
+        if: startsWith(matrix.os, 'macos')
+        run: brew install protobuf
+      - name: Install Protobuf (windows)
+        if: startsWith(matrix.os, 'windows')
+        run: choco install -y --no-progress protoc
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Setup Rust
@@ -24,6 +33,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
+      - name: Install Protobuf
+        run: sudo apt-get -y install protobuf-compiler
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Setup Rust (nightly)

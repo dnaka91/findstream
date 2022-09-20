@@ -3,7 +3,7 @@ FROM rust:1.63 as builder
 WORKDIR /volume
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends musl-tools=1.2.2-1 && \
+    apt-get install -y --no-install-recommends musl-tools=1.2.2-1 protobuf-compiler=3.12.4-1 && \
     rustup target add x86_64-unknown-linux-musl && \
     cargo init --bin
 
