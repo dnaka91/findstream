@@ -6,26 +6,26 @@ edition = "2021"
 license = "AGPL-3.0-only"
 
 [dependencies]
-anyhow = "1.0.63"
+anyhow = "1.0.65"
 askama = { version = "0.11.2", git = "https://github.com/djc/askama.git", default-features = false, features = ["with-axum"] }
 askama_axum = { version = "0.1.0", git = "https://github.com/djc/askama.git" }
-axum = { version = "0.5.15", features = ["http2"] }
-opentelemetry = { version = "0.17.0", features = ["rt-tokio", "trace"] }
-opentelemetry-otlp = { version = "0.10.0", features = ["trace"] }
-opentelemetry-semantic-conventions = "0.9.0"
+axum = { version = "0.5.16", features = ["http2"] }
+opentelemetry = { version = "0.18.0", features = ["rt-tokio", "trace"] }
+opentelemetry-otlp = { version = "0.11.0", features = ["trace"] }
+opentelemetry-semantic-conventions = "0.10.0"
 reqwest = { version = "0.11.11", default-features = false, features = ["json", "rustls-tls"] }
 serde = { version = "1.0.144", features = ["derive"] }
 time = { version = "0.3.14", features = ["parsing"] }
-tokio = { version = "1.21.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.21.1", features = ["macros", "rt-multi-thread"] }
 tokio-shutdown = "0.1.3"
 toml = "0.5.9"
 tower = { version = "0.4.13", features = ["limit", "load-shed", "timeout"] }
 tower-http = { version = "0.3.4", features = ["compression-gzip", "decompression-gzip", "trace"] }
 tracing = "0.1.36"
-tracing-opentelemetry = "0.17.4"
+tracing-opentelemetry = "0.18.0"
 tracing-subscriber = "0.3.15"
 unidirs = "0.1.0"
-url = "2.2.2"
+url = "2.3.1"
 
 [profile.release]
 lto = true
