@@ -1,8 +1,6 @@
-[advisories]
-ignore = ["RUSTSEC-2021-0139"]
-
 [licenses]
 allow = [
+    "BSD-2-Clause",
     "MPL-2.0",
     "OpenSSL",
 ]
@@ -28,5 +26,14 @@ license-files = [
     { path = "LICENSE", hash = 0xbd0eed23 },
 ]
 
+[bans]
+skip = [
+    { name = "rustls-pemfile", version = "=0.2.1" },
+    { name = "wasi", version = "=0.10.2" },
+]
+
 [sources]
-allow-git = ["https://github.com/djc/askama.git"]
+allow-git = [
+    "https://github.com/djc/askama.git",
+    "https://github.com/dnaka91/archer.git",
+]

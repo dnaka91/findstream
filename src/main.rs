@@ -7,17 +7,18 @@ use std::{
     env,
     net::{Ipv4Addr, SocketAddr},
     sync::Arc,
+    time::Duration,
 };
 
 use anyhow::Result;
 use axum::Server;
-use settings::Otlp;
 use tokio::sync::Mutex;
 use tokio_shutdown::Shutdown;
-use tracing::{error, info, Level, Subscriber};
+use tracing::{info, Level, Subscriber};
+use tracing_quiver::Handle;
 use tracing_subscriber::{filter::Targets, prelude::*, registry::LookupSpan, Layer};
 
-use crate::twitch::Client;
+use crate::{settings::Quiver, twitch::Client};
 
 mod handlers;
 mod lang;
@@ -37,9 +38,17 @@ const ADDRESS: Ipv4Addr = if cfg!(debug_assertions) {
 async fn main() -> Result<()> {
     let settings = settings::load()?;
 
+    let (quiver, handle) = match settings.tracing.quiver.map(init_tracing) {
+        Some(tracing) => {
+            let (quiver, handle) = tracing.await?;
+            (Some(quiver), Some(handle))
+        }
+        None => (None, None),
+    };
+
     tracing_subscriber::registry()
         .with(tracing_subscriber::fmt::layer())
-        .with(settings.tracing.otlp.map(init_tracing).transpose()?)
+        .with(quiver)
         .with(
             Targets::new()
                 .with_target(env!("CARGO_CRATE_NAME"), Level::TRACE)
@@ -62,36 +71,22 @@ async fn main() -> Result<()> {
 
     server.await?;
 
+    if let Some(handle) = handle {
+        handle.shutdown(Duration::from_secs(5)).await;
+    }
+
     Ok(())
 }
 
-fn init_tracing<S>(settings: Otlp) -> Result<impl Layer<S>>
+async fn init_tracing<S>(settings: Quiver) -> Result<(impl Layer<S>, Handle)>
 where
     for<'span> S: Subscriber + LookupSpan<'span>,
 {
-    use opentelemetry::{
-        global, runtime,
-        sdk::{trace, Resource},
-    };
-    use opentelemetry_otlp::WithExportConfig;
-    use opentelemetry_semantic_conventions::resource;
-
-    global::set_error_handler(|error| {
-        error!(target:"opentelemetry", %error);
-    })?;
-
-    let tracer = opentelemetry_otlp::new_pipeline()
-        .tracing()
-        .with_exporter(
-            opentelemetry_otlp::new_exporter()
-                .tonic()
-                .with_endpoint(settings.endpoint),
-        )
-        .with_trace_config(trace::config().with_resource(Resource::new([
-            resource::SERVICE_NAME.string(env!("CARGO_CRATE_NAME")),
-            resource::SERVICE_VERSION.string(env!("CARGO_PKG_VERSION")),
-        ])))
-        .install_batch(runtime::Tokio)?;
-
-    Ok(tracing_opentelemetry::layer().with_tracer(tracer))
+    tracing_quiver::builder()
+        .with_server_addr(settings.address)
+        .with_server_cert(settings.certificate)
+        .with_resource(env!("CARGO_CRATE_NAME"), env!("CARGO_PKG_VERSION"))
+        .build()
+        .await
+        .map_err(Into::into)
 }

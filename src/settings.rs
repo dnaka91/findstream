@@ -1,4 +1,4 @@
-use std::{fs, time::Duration};
+use std::{fs, net::SocketAddr, time::Duration};
 
 use anyhow::{Context, Result};
 use serde::Deserialize;
@@ -30,12 +30,13 @@ pub struct Twitch {
 #[derive(Default, Deserialize)]
 pub struct Tracing {
     #[serde(default)]
-    pub otlp: Option<Otlp>,
+    pub quiver: Option<Quiver>,
 }
 
 #[derive(Deserialize)]
-pub struct Otlp {
-    pub endpoint: String,
+pub struct Quiver {
+    pub address: SocketAddr,
+    pub certificate: String,
 }
 
 pub fn load() -> Result<Settings> {
