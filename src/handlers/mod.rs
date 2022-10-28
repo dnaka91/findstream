@@ -3,12 +3,12 @@
 pub mod api;
 
 use axum::{
-    body::Body,
     extract::{Extension, Query},
-    http::{Response, StatusCode},
+    http::StatusCode,
     response::IntoResponse,
     BoxError,
 };
+use reqwest::header::CONTENT_TYPE;
 use serde::Deserialize;
 use tracing::{error, instrument};
 
@@ -36,17 +36,11 @@ pub async fn api_info() -> impl IntoResponse {
 }
 
 #[instrument]
-pub async fn favicon_32() -> impl IntoResponse {
-    Response::new(Body::from(
-        &include_bytes!("../../assets/favicon-32x32.png")[..],
-    ))
-}
-
-#[instrument]
-pub async fn favicon_16() -> impl IntoResponse {
-    Response::new(Body::from(
-        &include_bytes!("../../assets/favicon-16x16.png")[..],
-    ))
+pub async fn favicon() -> impl IntoResponse {
+    (
+        [(CONTENT_TYPE, "image/svg+xml")],
+        include_str!("../../assets/favicon.svg"),
+    )
 }
 
 #[instrument(skip(client))]

@@ -6,8 +6,8 @@ indent_size = 4
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{html,json,yml}]
+[*.{html,json,svg,yml}]
 indent_size = 2
 
-[*.{html,json}]
+[*.{html,json,svg}]
 insert_final_newline = false
