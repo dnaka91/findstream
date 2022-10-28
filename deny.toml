@@ -33,7 +33,4 @@ skip = [
 ]
 
 [sources]
-allow-git = [
-    "https://github.com/djc/askama.git",
-    "https://github.com/dnaka91/archer.git",
-]
+allow-git = ["https://github.com/dnaka91/archer.git"]

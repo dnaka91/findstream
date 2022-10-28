@@ -1,9 +1,38 @@
 use std::fmt::Write;
 
 use askama::Template;
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+};
+use reqwest::header::CONTENT_TYPE;
 use time::OffsetDateTime;
+use tracing::error;
 
 use crate::twitch::Stream;
+
+pub struct HtmlTemplate<T>(T);
+
+impl<T> IntoResponse for HtmlTemplate<T>
+where
+    T: Template,
+{
+    fn into_response(self) -> Response {
+        match self.0.render() {
+            Ok(body) => ([(CONTENT_TYPE, T::MIME_TYPE)], body).into_response(),
+            Err(err) => {
+                error!(?err, "failed rendering template");
+                StatusCode::INTERNAL_SERVER_ERROR.into_response()
+            }
+        }
+    }
+}
+
+impl<T> From<T> for HtmlTemplate<T> {
+    fn from(value: T) -> Self {
+        Self(value)
+    }
+}
 
 #[derive(Template)]
 #[template(path = "index.html")]

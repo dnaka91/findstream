@@ -1,9 +1,9 @@
-use axum::{extract::Extension, http::StatusCode, response::IntoResponse, Json};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use serde::Serialize;
 use time::OffsetDateTime;
 use tracing::error;
 
-use super::{create_query_words, filter_streams, SearchParams};
+use super::SearchParams;
 use crate::{
     lang,
     twitch::{AsyncClient, Stream},
@@ -33,8 +33,8 @@ impl From<Stream> for SimpleStream {
 }
 
 pub async fn search(
+    State(client): State<AsyncClient>,
     Json(params): Json<SearchParams>,
-    Extension(client): Extension<AsyncClient>,
 ) -> impl IntoResponse {
     let resp = client
         .lock()
@@ -50,8 +50,8 @@ pub async fn search(
         }
     };
 
-    let words = create_query_words(&params.query);
-    let streams = filter_streams(resp, &words, &params.language, SimpleStream::from);
+    let words = super::create_query_words(&params.query);
+    let streams = super::filter_streams(resp, &words, &params.language, SimpleStream::from);
 
     Ok(Json(streams))
 }
