@@ -28,7 +28,6 @@ license-files = [
 
 [bans]
 skip = [
-    { name = "rustls-pemfile", version = "=0.2.1" },
     { name = "wasi", version = "=0.10.2" },
 ]
 
