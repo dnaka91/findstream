@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
 use axum::{
     error_handling::HandleErrorLayer,
@@ -10,9 +10,9 @@ use tower_http::ServiceBuilderExt;
 
 use crate::{handlers, middleware, settings, twitch::AsyncClient};
 
-pub fn build(client: AsyncClient, settings: &settings::Server) -> Router<AsyncClient> {
-    Router::with_state(Arc::clone(&client))
-        .nest("/api", api(client))
+pub fn build(client: AsyncClient, settings: &settings::Server) -> Router<()> {
+    Router::new()
+        .nest("/api", api())
         .route("/favicon.svg", get(handlers::favicon))
         .route("/api-info", get(handlers::api_info))
         .route("/", get(handlers::index))
@@ -27,8 +27,9 @@ pub fn build(client: AsyncClient, settings: &settings::Server) -> Router<AsyncCl
                 .trace_for_http()
                 .compression(),
         )
+        .with_state(client)
 }
 
-fn api(client: AsyncClient) -> Router<AsyncClient> {
-    Router::with_state(client).route("/search", post(handlers::api::search))
+fn api() -> Router<AsyncClient> {
+    Router::new().route("/search", post(handlers::api::search))
 }
