@@ -62,9 +62,10 @@ async fn main() -> Result<()> {
     let client = Arc::new(Mutex::new(client));
 
     let addr = SocketAddr::from((ADDRESS, 8080));
+    let app = routes::build(&settings.server).with_state(client);
 
     let server = Server::try_bind(&addr)?
-        .serve(routes::build(client, &settings.server).into_make_service())
+        .serve(app.into_make_service())
         .with_graceful_shutdown(shutdown.handle());
 
     info!("listening on http://{addr}");

@@ -10,7 +10,7 @@ use tower_http::ServiceBuilderExt;
 
 use crate::{handlers, middleware, settings, twitch::AsyncClient};
 
-pub fn build(client: AsyncClient, settings: &settings::Server) -> Router<()> {
+pub fn build(settings: &settings::Server) -> Router<AsyncClient> {
     Router::new()
         .nest("/api", api())
         .route("/favicon.svg", get(handlers::favicon))
@@ -27,7 +27,6 @@ pub fn build(client: AsyncClient, settings: &settings::Server) -> Router<()> {
                 .trace_for_http()
                 .compression(),
         )
-        .with_state(client)
 }
 
 fn api() -> Router<AsyncClient> {
