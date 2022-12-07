@@ -15,10 +15,10 @@ use axum::Server;
 use tokio::sync::Mutex;
 use tokio_shutdown::Shutdown;
 use tracing::{info, Level, Subscriber};
-use tracing_quiver::Handle;
+use tracing_archer::Handle;
 use tracing_subscriber::{filter::Targets, prelude::*, registry::LookupSpan, Layer};
 
-use crate::{settings::Quiver, twitch::Client};
+use crate::{settings::Archer, twitch::Client};
 
 mod handlers;
 mod lang;
@@ -38,7 +38,7 @@ const ADDRESS: Ipv4Addr = if cfg!(debug_assertions) {
 async fn main() -> Result<()> {
     let settings = settings::load()?;
 
-    let (quiver, handle) = match settings.tracing.quiver.map(init_tracing) {
+    let (quiver, handle) = match settings.tracing.archer.map(init_tracing) {
         Some(tracing) => {
             let (quiver, handle) = tracing.await?;
             (Some(quiver), Some(handle))
@@ -79,11 +79,11 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn init_tracing<S>(settings: Quiver) -> Result<(impl Layer<S>, Handle)>
+async fn init_tracing<S>(settings: Archer) -> Result<(impl Layer<S>, Handle)>
 where
     for<'span> S: Subscriber + LookupSpan<'span>,
 {
-    tracing_quiver::builder()
+    tracing_archer::builder()
         .with_server_addr(settings.address)
         .with_server_cert(settings.certificate)
         .with_resource(env!("CARGO_CRATE_NAME"), env!("CARGO_PKG_VERSION"))
