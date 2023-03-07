@@ -2,7 +2,6 @@
 
 pub mod api;
 
-use askama::Template;
 use axum::{
     extract::{Query, State},
     http::StatusCode,
@@ -14,7 +13,7 @@ use serde::Deserialize;
 use tracing::{error, instrument};
 
 use crate::{
-    templates::{self, HtmlTemplate},
+    templates,
     twitch::{AsyncClient, Category, Stream},
 };
 
@@ -27,13 +26,13 @@ pub struct SearchParams {
 }
 
 #[instrument]
-pub async fn index() -> HtmlTemplate<impl Template> {
-    templates::Index.into()
+pub async fn index() -> impl IntoResponse {
+    templates::Index
 }
 
 #[instrument]
-pub async fn api_info() -> HtmlTemplate<impl Template> {
-    templates::ApiInfo.into()
+pub async fn api_info() -> impl IntoResponse {
+    templates::ApiInfo
 }
 
 #[instrument]
@@ -48,7 +47,7 @@ pub async fn favicon() -> impl IntoResponse {
 pub async fn search(
     Query(params): Query<SearchParams>,
     State(client): State<AsyncClient>,
-) -> HtmlTemplate<impl Template> {
+) -> impl IntoResponse {
     let resp = client
         .lock()
         .await
@@ -59,14 +58,14 @@ pub async fn search(
         Ok(resp) => resp,
         Err(e) => {
             error!("failed querying twitch: {:?}", e);
-            return templates::Results::error().into();
+            return templates::Results::error();
         }
     };
 
     let words = create_query_words(&params.query);
     let streams = filter_streams(resp, &words, &params.language, |s| s);
 
-    templates::Results::new(words, streams).into()
+    templates::Results::new(words, streams)
 }
 
 fn create_query_words(query: &str) -> Vec<String> {

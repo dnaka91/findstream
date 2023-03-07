@@ -46,7 +46,6 @@ pub fn load() -> Result<Settings> {
         .config_dir()
         .join("config.toml");
 
-    let buf = fs::read_to_string(path).context("failed reading settings file")?;
-
-    toml::from_str(&buf).context("failed parsing settings")
+    let buf = fs::read(path).context("failed reading settings file")?;
+    basic_toml::from_slice(&buf).context("failed parsing settings")
 }
