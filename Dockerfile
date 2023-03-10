@@ -1,6 +1,8 @@
-FROM rust:1.67 as builder
+FROM rust:1.68 as builder
 
 WORKDIR /volume
+
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends musl-tools=1.2.2-1 && \
@@ -17,7 +19,7 @@ COPY templates/ templates/
 
 RUN touch src/main.rs && cargo build --release --target x86_64-unknown-linux-musl
 
-FROM alpine:3.17 as newuser
+FROM alpine:3 as newuser
 
 RUN echo "findstream:x:1000:" > /tmp/group && \
     echo "findstream:x:1000:1000::/dev/null:/sbin/nologin" > /tmp/passwd
