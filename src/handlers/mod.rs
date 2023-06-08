@@ -1,4 +1,4 @@
-#![allow(clippy::unused_async)]
+#![allow(clippy::let_with_type_underscore, clippy::unused_async)]
 
 pub mod api;
 
