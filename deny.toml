@@ -28,7 +28,8 @@ license-files = [
 
 [bans]
 skip = [
-	{ name = "socket2", version = "=0.4.9" },
+	{ name = "bitflags", version = "1" },
+	{ name = "socket2", version = "0.4" },
 ]
 
 [sources]
