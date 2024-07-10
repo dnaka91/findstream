@@ -1,14 +1,19 @@
-#![allow(clippy::let_with_type_underscore, clippy::unused_async)]
+#![allow(clippy::unused_async)]
 
 pub mod api;
 
+use std::{collections::hash_map::DefaultHasher, hash::Hasher};
+
 use axum::{
     extract::{Query, State},
-    http::StatusCode,
+    http::{
+        header::{CONTENT_TYPE, ETAG, IF_NONE_MATCH},
+        HeaderMap, StatusCode,
+    },
     response::IntoResponse,
     BoxError,
 };
-use reqwest::header::CONTENT_TYPE;
+use once_cell::sync::Lazy;
 use serde::Deserialize;
 use tracing::{error, instrument};
 
@@ -40,6 +45,31 @@ pub async fn favicon() -> impl IntoResponse {
     (
         [(CONTENT_TYPE, "image/svg+xml")],
         include_str!("../../assets/favicon.svg"),
+    )
+}
+
+#[instrument]
+pub async fn css(headers: HeaderMap) -> impl IntoResponse {
+    static CONTENT: &str = include_str!("../../assets/main.css");
+    static ETAG_HASH: Lazy<String> = Lazy::new(|| {
+        let mut hasher = DefaultHasher::new();
+        hasher.write(CONTENT.as_bytes());
+        format!("\"{:016x}\"", hasher.finish())
+    });
+
+    let (code, content) = if headers
+        .get(IF_NONE_MATCH)
+        .map_or(true, |value| value.as_bytes() != ETAG_HASH.as_bytes())
+    {
+        (StatusCode::OK, CONTENT)
+    } else {
+        (StatusCode::NOT_MODIFIED, "")
+    };
+
+    (
+        code,
+        [(CONTENT_TYPE, "text/css"), (ETAG, &ETAG_HASH)],
+        content,
     )
 }
 

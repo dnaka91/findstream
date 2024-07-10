@@ -1,0 +1,13 @@
+{
+  "name": "findstream",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "tailwind": "tailwindcss -i ./assets/tailwind.css -o ./assets/main.css",
+    "watch": "pnpm run tailwind --watch",
+    "build": "pnpm run tailwind --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.3"
+  }
+}

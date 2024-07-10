@@ -1,10 +1,16 @@
+[advisories]
+version = 2
+
 [licenses]
+version = 2
 allow = [
-    "BSD-2-Clause",
+    "Apache-2.0",
+    "BSD-3-Clause",
+    "ISC",
+    "MIT",
     "MPL-2.0",
     "OpenSSL",
 ]
-allow-osi-fsf-free = "both"
 exceptions = [
     { allow = ["AGPL-3.0"], name = "findstream" },
     { allow = ["Unicode-DFS-2016"], name = "unicode-ident" },
@@ -28,8 +34,12 @@ license-files = [
 
 [bans]
 skip = [
-	{ name = "bitflags", version = "1" },
-	{ name = "socket2", version = "0.4" },
+    { name = "bitflags", version = "1" },
+    { name = "rustls", version = "0.22" },
+    { name = "sync_wrapper", version = "0.1" },
+]
+skip-tree = [
+    { name = "windows-sys", version = "0.48", depth = 3 },
 ]
 
 [sources]

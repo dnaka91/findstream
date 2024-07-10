@@ -109,6 +109,7 @@ impl Category {
 
 pub type AsyncClient = Arc<Mutex<Client>>;
 
+#[allow(clippy::struct_field_names)]
 pub struct Client {
     client: HttpClient,
     client_id: String,

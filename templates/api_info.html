@@ -1,163 +1,153 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero is-fullheight">
-  <div class="hero-body">
-    <div class="container">
+<section class="pt-14">
+  {% include "header.html" %}
 
-      {% include "header.html" %}
+  <div class="container flex flex-col gap-4 mx-auto">
+    <p class="pt-2 text-2xl font-bold">Findstream API</p>
+    <p>
+      The following describes the API provided by <b>Findstream</b>, which allows to get the
+      same results available on the webpage of this service.
+    </p>
+    <p>
+      If possible, please enable <code>gzip</code> compression in your HTTP client to reduce
+      the amount of data transferred.
+    </p>
 
-      <div class="columns">
-        <div class="column is-6 is-offset-3">
-          <div class="content">
-            <h2>Findstream API</h2>
-            <p>
-              The following describes the API provided by <b>Findstream</b>, which allows to get the
-              same results available on the webpage of this service.
-            </p>
-            <p>
-              If possible, please enable <code>gzip</code> compression in your HTTP client to reduce
-              the amount of data transferred.
-            </p>
+    <p class="pt-1 text-xl font-bold">Fair use</p>
+    <p>
+      This API is provided free of service. Please <b></b>just be nice</b> and don't over-use it.
+      If you plan to send a high volume of requests, please open an issue at the
+      <a href="https://github.com/dnaka91/findstream/issues/new">GitHub project</a> first.
+    </p>
+    <p>
+      In case a large amount of unusual traffic is seen on this endpoint, eventually causing the
+      service to hit the rate limit of Twitch's API too often, the API may be changed to be
+      invite-only without further notice.
+    </p>
 
-            <h3>Fair use</h3>
-            <p>
-              This API is provided free of service. Please <b></b>just be nice</b> and don't over-use it.
-              If you plan to send a high volume of requests, please open an issue at the
-              <a href="https://github.com/dnaka91/findstream/issues/new">GitHub project</a> first.
-            </p>
-            <p>
-              In case a large amount of unusual traffic is seen on this endpoint, eventually causing the
-              service to hit the rate limit of Twitch's API too often, the API may be changed to be
-              invite-only without further notice.
-            </p>
+    <p class="pt-1 text-xl font-bold">Request</p>
+    <p>
+      The request must be sent to <code>/api/search</code> with the <code>POST</code> method and a JSON body.
+      Fields <code>category</code> and <code>query</code> are mandatory, the <code>language</code> field can
+      be used to further restrict results to a specific language.
+    </p>
+    <table class="gap-2 table-auto divider-y">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>category</code></td>
+          <td>String</td>
+          <td>
+            Twitch category to search in. Possible values are (case-sensitive):
+            <ul class="list-disc list-inside ps-2">
+              <li>Art</li>
+              <li>BeautyAndBodyArt</li>
+              <li>FoodAndDrink</li>
+              <li>JustChatting</li>
+              <li>MakersAndCrafting</li>
+              <li>Music</li>
+              <li>Retro</li>
+              <li>ScienceAndTechnology</li>
+              <li>SoftwareAndGameDevelopment</li>
+              <li>TalkShowsAndPodcasts</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td><code>query</code></td>
+          <td>String</th>
+          <td>
+            The search query. The text will be split by whitespace and stream titles are search to match any of
+            the words.
+          </td>
+        </tr>
+        <tr>
+          <td><code>language</code></td>
+          <td>String (optional)</td>
+          <td>
+            Language code (<a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO-639-1</a>) that
+            results should be limited to.
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-            <h3>Request</h3>
-            <p>
-              The request must be sent to <code>/api/search</code> with the <code>POST</code> method and a JSON body.
-              Fields <code>category</code> and <code>query</code> are mandatory, the <code>language</code> field can
-              be used to further restrict results to a specific language.
-            </p>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Field</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>category</code></td>
-                  <td>String</td>
-                  <td>
-                    Twitch category to search in. Possible values are (case-sensitive):
-                    <ul>
-                      <li>Art</li>
-                      <li>BeautyAndBodyArt</li>
-                      <li>FoodAndDrink</li>
-                      <li>JustChatting</li>
-                      <li>MakersAndCrafting</li>
-                      <li>Music</li>
-                      <li>Retro</li>
-                      <li>ScienceAndTechnology</li>
-                      <li>SoftwareAndGameDevelopment</li>
-                      <li>TalkShowsAndPodcasts</li>
-                    </ul>
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>query</code></td>
-                  <td>String</th>
-                  <td>
-                    The search query. The text will be split by whitespace and stream titles are search to match any of
-                    the words.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>language</code></td>
-                  <td>String (optional)</td>
-                  <td>
-                    Langauge code (<a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO-639-1</a>) that
-                    results should be limited to.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+    <p class="text-lg font-bold">Example</p>
+    <p>
+    <pre class="overflow-x-auto p-4 rounded bg-zinc-300 dark:bg-zinc-800">
+      {%- include "sample_request.json" -%}
+    </pre>
+    </p>
 
-            <h4>Example</h4>
-            <p>
-            <pre>{% include "sample_request.json" %}</pre>
-            </p>
+    <p class="pt-1 text-xl font-bold">Response</p>
+    <p>
+      A successful response is a JSON array with each element having the following fields.
+      Except <code>stream_time</code>, all fields are always present.
+    </p>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>title</code></td>
+          <td>String</th>
+          <td>
+            Full stream title as found on Twitch.
+          </td>
+        </tr>
+        <tr>
+          <td><code>username</code></td>
+          <td>String</th>
+          <td>
+            Twitch username. Can be combined with the Twitch URL to generate a direct link to the
+            stream. Example: <code>https://www.twitch.tv/{username}</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>language</code></td>
+          <td>String</th>
+          <td>
+            Written out full language name (not an ISO code anymore).
+          </td>
+        </tr>
+        <tr>
+          <td><code>stream_time</code></td>
+          <td>i64 (optional)</th>
+          <td>
+            Duration (in seconds) since the streamer went online.
+          </td>
+        </tr>
+        <tr>
+          <td><code>viewer_count</code></td>
+          <td>u64</th>
+          <td>
+            Current amount of viewers.
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-            <h3>Response</h3>
-            <p>
-              A successful response is a JSON array with each element having the following fields.
-              Except <code>stream_time</code>, all fields are always present.
-            </p>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Field</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>title</code></td>
-                  <td>String</th>
-                  <td>
-                    Full stream title as found on Twitch.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>username</code></td>
-                  <td>String</th>
-                  <td>
-                    Twitch username. Can be combined with the Twitch URL to generate a direct link to the
-                    stream. Example: <code>https://www.twitch.tv/{username}</code>.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>language</code></td>
-                  <td>String</th>
-                  <td>
-                    Written out full language name (not an ISO code anymore).
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>stream_time</code></td>
-                  <td>i64 (optional)</th>
-                  <td>
-                    Duration (in seconds) since the streamer went online.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>viewer_count</code></td>
-                  <td>u64</th>
-                  <td>
-                    Current amount of viewers.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h4>Example</h4>
-            <p>
-            <pre>{% include "sample_response.json" %}</pre>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="columns mt-6">
-        <div class="column">
-          {% include "credits.html" %}
-        </div>
-      </div>
-
-    </div>
+    <p class="text-lg font-bold">Example</p>
+    <p>
+    <pre class="overflow-x-auto p-4 rounded bg-zinc-300 dark:bg-zinc-800">
+      {%- include "sample_response.json" -%}
+    </pre>
+    </p>
   </div>
+
+  {% include "credits.html" %}
 </section>
 {% endblock content %}

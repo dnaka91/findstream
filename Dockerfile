@@ -1,4 +1,16 @@
-FROM rust:1.68 as builder
+FROM node:21 as tailwind
+
+WORKDIR /volume
+
+COPY assets/tailwind.css assets/
+COPY templates/ templates/
+COPY package.json pnpm-lock.yaml tailwind.config.js ./
+
+RUN corepack enable
+RUN pnpm install
+RUN pnpm run build
+
+FROM rust:1.75 as builder
 
 WORKDIR /volume
 
@@ -16,6 +28,8 @@ RUN cargo build --release --target x86_64-unknown-linux-musl
 COPY assets/ assets/
 COPY src/ src/
 COPY templates/ templates/
+
+COPY --from=tailwind /volume/assets/main.css assets/main.css
 
 RUN touch src/main.rs && cargo build --release --target x86_64-unknown-linux-musl
 

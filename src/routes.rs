@@ -14,6 +14,7 @@ pub fn build(settings: &settings::Server) -> Router<AsyncClient> {
     Router::new()
         .nest("/api", api())
         .route("/favicon.svg", get(handlers::favicon))
+        .route("/main.css", get(handlers::css))
         .route("/api-info", get(handlers::api_info))
         .route("/", get(handlers::index))
         .route("/search", get(handlers::search))

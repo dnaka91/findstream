@@ -1,2 +1,4 @@
 /.local
+/assets/main.css
+/node_modules
 /target

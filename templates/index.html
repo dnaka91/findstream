@@ -1,88 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero is-fullheight">
-  <div class="hero-body">
-    <div class="container">
+<section class="flex flex-col gap-8 justify-center items-center h-screen">
+  {% include "header.html" %}
 
-      {% include "header.html" %}
-
-      <div class="columns">
-        <div class="column is-6 is-offset-3">
-          <div class="notification">
-            We now have an API that you can use with any HTTP client. For further details, check out the
-            <a href="/api-info">info page</a>.
-          </div>
-        </div>
-      </div>
-
-      <div class="columns">
-        <div class="column is-6 is-offset-3">
-          <form action="/search" method="GET">
-            <div class="field is-horizontal">
-              <div class="field-body">
-                <div class="field">
-                  <div class="control has-icons-left is-expanded">
-                    <div class="select is-fullwidth">
-                      <select name="category">
-                        <option value="Art">Art</option>
-                        <option value="BeautyAndBodyArt">Beauty & Body Art</option>
-                        <option value="FoodAndDrink">Food & Drink</option>
-                        <option value="JustChatting">Just Chatting</option>
-                        <option value="MakersAndCrafting">Makers & Crafting</option>
-                        <option value="Music">Music</option>
-                        <option value="Retro">Retro</option>
-                        <option value="ScienceAndTechnology">Science & Technology</option>
-                        <option value="SoftwareAndGameDevelopment" selected>Software and Game Development</option>
-                        <option value="TalkShowsAndPodcasts">Talk Shows & Podcasts</option>
-                      </select>
-                    </div>
-                    <div class="icon is-small is-left">🏷️</div>
-                  </div>
-                </div>
-                <div class="field">
-                  <div class="control has-icons-left is-expanded">
-                    <div class="select is-fullwidth">
-                      <select name="language">
-                        <option value="" selected>All</option>
-                        <option value="en">English</option>
-                        <option value="de">German</option>
-                        <option value="it">Italian</option>
-                        <option value="jp">Japanese</option>
-                        <option value="ko">Korean</option>
-                        <option value="ru">Russian</option>
-                        <option value="es">Spanish</option>
-                      </select>
-                    </div>
-                    <div class="icon is-small is-left">🎤</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="field is-horizontal">
-              <div class="field-body">
-                <div class="field has-addons">
-                  <div class="control has-icons-left is-expanded">
-                    <input class="input" type="text" name="query" placeholder="Find a stream" autofocus>
-                    <span class="icon is-small is-left">🔍</span>
-                  </div>
-                  <div class="control">
-                    <input class="button is-info" type="submit" value="Search">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="columns mt-6">
-        <div class="column">
-          {% include "credits.html" %}
-        </div>
-      </div>
-
-    </div>
+  <div class="p-6 max-w-xl rounded bg-zinc-200 dark:bg-zinc-800">
+    We now have an API that you can use with any HTTP client. For further details, check out the
+    <a class="font-normal underline text-zinc-800 dark:text-zinc-300" href="/api-info">info page</a>.
   </div>
+
+  <form action="/search" method="GET">
+    <div class="flex flex-col gap-2 max-w-xl justify-stretch">
+      <div class="flex flex-col gap-2 sm:flex-row">
+        <div class="flex items-center h-10 rounded border focus-within:border-blue-500 grow border-zinc-400 dark:border-zinc-600 focus-within:outline focus-within:outline-2 focus-within:outline-blue-500/25">
+          <div class="px-2">🏷️</div>
+          <select name="category" class="py-2 bg-transparent grow sm:pe-12">
+            <option value="Art">Art</option>
+            <option value="BeautyAndBodyArt">Beauty & Body Art</option>
+            <option value="FoodAndDrink">Food & Drink</option>
+            <option value="JustChatting">Just Chatting</option>
+            <option value="MakersAndCrafting">Makers & Crafting</option>
+            <option value="Music">Music</option>
+            <option value="Retro">Retro</option>
+            <option value="ScienceAndTechnology">Science & Technology</option>
+            <option value="SoftwareAndGameDevelopment" selected>Software and Game Development</option>
+            <option value="TalkShowsAndPodcasts">Talk Shows & Podcasts</option>
+          </select>
+        </div>
+        <div class="flex items-center h-10 rounded border focus-within:border-blue-500 border-zinc-400 dark:border-zinc-600 focus-within:outline focus-within:outline-2 focus-within:outline-blue-500/25">
+          <div class="px-2">🎤</div>
+          <select name="language" class="py-2 bg-transparent grow sm:pe-12">
+            <option value="" selected>All</option>
+            <option value="en">English</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="jp">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="ru">Russian</option>
+            <option value="es">Spanish</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex">
+        <div class="flex items-center h-10 focus-within:border-blue-500 grow border-zinc-400 border-s border-y rounded-s dark:border-zinc-600 focus-within:outline focus-within:outline-2 focus-within:outline-blue-500/25">
+          <div class="px-2">🔍</div>
+          <input class="py-2 bg-transparent focus:outline-none grow pe-2 placeholder-zinc-700 caret-blue-500" type="text" name="query" placeholder="Find a stream" autofocus>
+        </div>
+        <button class="px-4 text-white bg-blue-400 hover:bg-blue-500 active:bg-blue-600 rounded-e" type="submit">Search</button>
+      </div>
+    </div>
+  </form>
+
+  {% include "credits.html" %}
 </section>
 {% endblock content %}
