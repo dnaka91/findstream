@@ -32,49 +32,40 @@
       </div>
     </div>
     {% else %}
-    <div class="tile is-ancestor">
-      {% for stream in streams %}
-      <div class="tile is-parent">
-        <div class="tile is-child card">
-          <div class="card-image">
-            <figure class="image is-16by9">
-              <img src="{{ self::sized(stream.thumbnail_url, 640, 360) }}">
-            </figure>
-          </div>
-          <div class="card-content">
-            <p class="title is-4">
-              <a href="https://twitch.tv/{{ stream.user_name }}">{{ stream.title }}</a>
-            </p>
-            <p class="subtitle is-6">@{{ stream.user_name }}</p>
-            <div class="content">
-              <div>
-                <span class="icon">🎤</span>
-                <span>Speaking <strong>{{ crate::lang::translate_iso_639_1(stream.language) }}</strong></span>
-              </div>
-              <div>
-                <span class="icon">⏱️</span>
-                <span>Streaming for <strong>{{ self::since_now(stream.started_at) }}</strong></span>
-              </div>
-              <div>
-                <span class="icon">👀</span>
-                <span>With <strong>{{ stream.viewer_count }} viewers</strong></span>
+    <div class="fixed-grid has-3-cols">
+      <div class="grid">
+        {% for stream in streams %}
+        <div class="cell">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-16by9">
+                <img src="{{ self::sized(stream.thumbnail_url, 640, 360) }}">
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">
+                <a href="https://twitch.tv/{{ stream.user_name }}">{{ stream.title }}</a>
+              </p>
+              <p class="subtitle is-6">@{{ stream.user_name }}</p>
+              <div class="content">
+                <div>
+                  <span class="icon">🎤</span>
+                  <span>Speaking <strong>{{ crate::lang::translate_iso_639_1(stream.language) }}</strong></span>
+                </div>
+                <div>
+                  <span class="icon">⏱️</span>
+                  <span>Streaming for <strong>{{ self::since_now(stream.started_at) }}</strong></span>
+                </div>
+                <div>
+                  <span class="icon">👀</span>
+                  <span>With <strong>{{ stream.viewer_count }} viewers</strong></span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% if loop.index % 3 == 0 %}
-      </div>
-      <div class="tile is-ancestor">
-      {% endif %}
-      {% if loop.last && loop.index % 3 > 0 %}
-      {% for _ in loop.index % 3..3 %}
-      <div class="tile is-parent">
-        <div class="tile is-child"></div>
-      </div>
-      {% endfor %}
-      {% endif %}
-      {% endfor %}
     </div>
     {% endif %}
 
