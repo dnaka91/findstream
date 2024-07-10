@@ -11,8 +11,7 @@ use std::{
 };
 
 use anyhow::Result;
-use axum::Server;
-use tokio::sync::Mutex;
+use tokio::{net::TcpListener, sync::Mutex};
 use tokio_shutdown::Shutdown;
 use tracing::{info, Level, Subscriber};
 use tracing_archer::Handle;
@@ -64,9 +63,8 @@ async fn main() -> Result<()> {
     let addr = SocketAddr::from((ADDRESS, 8080));
     let app = routes::build(&settings.server).with_state(client);
 
-    let server = Server::try_bind(&addr)?
-        .serve(app.into_make_service())
-        .with_graceful_shutdown(shutdown.handle());
+    let server =
+        axum::serve(TcpListener::bind(addr).await?, app).with_graceful_shutdown(shutdown.handle());
 
     info!("listening on http://{addr}");
 
