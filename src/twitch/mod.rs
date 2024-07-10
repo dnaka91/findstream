@@ -15,17 +15,7 @@ use crate::settings;
 
 mod deser;
 
-#[derive(Debug, Deserialize)]
-pub struct SearchResponse {
-    pub game_id: String,
-    pub display_name: String,
-    pub broadcaster_language: String,
-    pub title: String,
-    pub thumbnail_url: String,
-    #[serde(deserialize_with = "deser::opt_datetime")]
-    pub started_at: Option<OffsetDateTime>,
-}
-
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Stream {
     pub id: String,
