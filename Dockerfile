@@ -1,8 +1,6 @@
-FROM rust:1.68 as builder
+FROM rust:1.79 as builder
 
 WORKDIR /volume
-
-ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends musl-tools && \
