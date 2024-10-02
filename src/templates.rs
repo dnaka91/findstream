@@ -1,6 +1,6 @@
 use std::fmt::Write;
 
-use askama::Template;
+use rinja::Template;
 use time::OffsetDateTime;
 
 use crate::twitch::Stream;
