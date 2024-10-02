@@ -22,7 +22,7 @@ pub struct Results {
 }
 
 impl Results {
-    pub fn new(query_words: Vec<String>, streams: Vec<Stream>) -> Self {
+    pub const fn new(query_words: Vec<String>, streams: Vec<Stream>) -> Self {
         Self {
             query_words,
             streams,
