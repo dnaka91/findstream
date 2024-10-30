@@ -6,15 +6,15 @@ edition = "2021"
 license = "AGPL-3.0-only"
 
 [dependencies]
-anyhow = "1.0.89"
+anyhow = "1.0.91"
 axum = { version = "0.7.7", features = ["http2"] }
 basic-toml = "0.1.9"
-reqwest = { version = "0.12.8", default-features = false, features = ["json", "rustls-tls"] }
-rinja = { version = "0.3.4", default-features = false, features = ["with-axum"] }
-rinja_axum = "0.3.4"
-serde = { version = "1.0.210", features = ["derive"] }
+reqwest = { version = "0.12.9", default-features = false, features = ["json", "rustls-tls"] }
+rinja = { version = "0.3.5", default-features = false, features = ["with-axum"] }
+rinja_axum = "0.3.5"
+serde = { version = "1.0.214", features = ["derive"] }
 time = { version = "0.3.36", features = ["parsing"] }
-tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.41.0", features = ["macros", "rt-multi-thread"] }
 tokio-shutdown = "0.1.4"
 tower = { version = "0.5.1", features = ["limit", "load-shed", "timeout"] }
 tower-http = { version = "0.6.1", features = ["compression-gzip", "decompression-gzip", "trace", "util"] }
