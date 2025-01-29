@@ -9,7 +9,7 @@ where
 {
     struct Visitor;
 
-    impl<'de> de::Visitor<'de> for Visitor {
+    impl de::Visitor<'_> for Visitor {
         type Value = Option<OffsetDateTime>;
 
         fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -53,7 +53,7 @@ where
 {
     struct Visitor;
 
-    impl<'de> de::Visitor<'de> for Visitor {
+    impl de::Visitor<'_> for Visitor {
         type Value = Duration;
 
         fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {

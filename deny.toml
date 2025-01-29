@@ -7,10 +7,10 @@ allow = [
     "MIT",
     "MPL-2.0",
     "OpenSSL",
+    "Unicode-3.0",
 ]
 exceptions = [
     { allow = ["AGPL-3.0"], name = "findstream" },
-    { allow = ["Unicode-DFS-2016"], name = "unicode-ident" },
 ]
 
 [[licenses.clarify]]
@@ -31,11 +31,12 @@ license-files = [
 
 [bans]
 skip = [
-    { name = "bitflags", version = "1" },
-    { name = "sync_wrapper", version = "0.1" },
+    "thiserror@1",
+    "thiserror-impl@1",
 ]
 skip-tree = [
-    { name = "windows-sys", version = "0.48", depth = 3 },
+    { crate = "windows-sys@0.48", depth = 3 },
+    { crate = "windows-sys@0.52", depth = 3 },
 ]
 
 [sources]

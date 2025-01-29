@@ -5,10 +5,11 @@ pub mod api;
 use axum::{
     extract::{Query, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{Html, IntoResponse, Response},
     BoxError,
 };
 use reqwest::header::CONTENT_TYPE;
+use rinja::Template;
 use serde::Deserialize;
 use tracing::{error, instrument};
 
@@ -16,6 +17,16 @@ use crate::{
     templates,
     twitch::{AsyncClient, Category, Stream},
 };
+
+#[derive(Debug, thiserror::Error)]
+#[error("could not render template")]
+pub struct AppError(#[from] rinja::Error);
+
+impl IntoResponse for AppError {
+    fn into_response(self) -> Response {
+        (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()).into_response()
+    }
+}
 
 #[derive(Debug, Deserialize)]
 pub struct SearchParams {
@@ -26,13 +37,13 @@ pub struct SearchParams {
 }
 
 #[instrument]
-pub async fn index() -> impl IntoResponse {
-    templates::Index
+pub async fn index() -> Result<impl IntoResponse, AppError> {
+    Ok(Html(templates::Index.render()?))
 }
 
 #[instrument]
-pub async fn api_info() -> impl IntoResponse {
-    templates::ApiInfo
+pub async fn api_info() -> Result<impl IntoResponse, AppError> {
+    Ok(Html(templates::ApiInfo.render()?))
 }
 
 #[instrument]
@@ -47,7 +58,7 @@ pub async fn favicon() -> impl IntoResponse {
 pub async fn search(
     Query(params): Query<SearchParams>,
     State(client): State<AsyncClient>,
-) -> impl IntoResponse {
+) -> Result<impl IntoResponse, AppError> {
     let resp = client
         .lock()
         .await
@@ -58,14 +69,14 @@ pub async fn search(
         Ok(resp) => resp,
         Err(e) => {
             error!("failed querying twitch: {:?}", e);
-            return templates::Results::error();
+            return Ok(Html(templates::Results::error().render()?));
         }
     };
 
     let words = create_query_words(&params.query);
     let streams = filter_streams(resp, &words, &params.language, |s| s);
 
-    templates::Results::new(words, streams)
+    Ok(Html(templates::Results::new(words, streams).render()?))
 }
 
 fn create_query_words(query: &str) -> Vec<String> {

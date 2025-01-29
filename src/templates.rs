@@ -39,9 +39,9 @@ impl Results {
     }
 }
 
-fn since_now(value: &Option<OffsetDateTime>) -> String {
+fn since_now(value: Option<OffsetDateTime>) -> String {
     if let Some(value) = value {
-        let duration = OffsetDateTime::now_utc() - *value;
+        let duration = OffsetDateTime::now_utc() - value;
         let mut buf = String::new();
 
         match duration.whole_days() {
