@@ -3,10 +3,10 @@
 pub mod api;
 
 use axum::{
+    BoxError,
     extract::{Query, State},
     http::StatusCode,
     response::{Html, IntoResponse, Response},
-    BoxError,
 };
 use reqwest::header::CONTENT_TYPE;
 use rinja::Template;

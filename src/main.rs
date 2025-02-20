@@ -13,9 +13,9 @@ use std::{
 use anyhow::Result;
 use tokio::{net::TcpListener, sync::Mutex};
 use tokio_shutdown::Shutdown;
-use tracing::{info, Level, Subscriber};
+use tracing::{Level, Subscriber, info};
 use tracing_archer::Handle;
-use tracing_subscriber::{filter::Targets, prelude::*, registry::LookupSpan, Layer};
+use tracing_subscriber::{Layer, filter::Targets, prelude::*, registry::LookupSpan};
 
 use crate::{settings::Archer, twitch::Client};
 

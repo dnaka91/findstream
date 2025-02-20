@@ -1,7 +1,7 @@
 use std::fmt;
 
 use serde::de;
-use time::{format_description::well_known::Rfc3339, Duration, OffsetDateTime};
+use time::{Duration, OffsetDateTime, format_description::well_known::Rfc3339};
 
 pub fn opt_datetime<'de, D>(d: D) -> Result<Option<OffsetDateTime>, D::Error>
 where

@@ -1,9 +1,9 @@
 use std::time::Duration;
 
 use axum::{
+    Router,
     error_handling::HandleErrorLayer,
     routing::{get, post},
-    Router,
 };
 use tower::ServiceBuilder;
 use tower_http::ServiceBuilderExt;

@@ -2,7 +2,7 @@
 name = "findstream"
 version = "0.2.0"
 authors = ["Dominik Nakamura <dnaka91@gmail.com>"]
-edition = "2021"
+edition = "2024"
 license = "AGPL-3.0-only"
 
 [dependencies]

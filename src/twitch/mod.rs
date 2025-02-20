@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use reqwest::{
-    header::{self, HeaderMap},
     Client as HttpClient,
+    header::{self, HeaderMap},
 };
 use serde::Deserialize;
 use time::{Duration, OffsetDateTime};
