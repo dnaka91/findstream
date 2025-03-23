@@ -23,3 +23,6 @@ tracing-archer = { git = "https://github.com/dnaka91/archer.git" }
 tracing-subscriber = "0.3.19"
 unidirs = "0.1.1"
 url = "2.5.4"
+
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemallocator = { version = "0.6.0", features = ["background_threads"] }

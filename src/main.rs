@@ -27,6 +27,10 @@ mod settings;
 mod templates;
 mod twitch;
 
+#[cfg(not(target_env = "msvc"))]
+#[global_allocator]
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+
 const ADDRESS: Ipv4Addr = if cfg!(debug_assertions) {
     Ipv4Addr::LOCALHOST
 } else {
