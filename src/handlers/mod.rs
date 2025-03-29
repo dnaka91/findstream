@@ -6,10 +6,9 @@ use axum::{
     BoxError,
     extract::{Query, State},
     http::StatusCode,
-    response::{Html, IntoResponse, Response},
+    response::IntoResponse,
 };
 use reqwest::header::CONTENT_TYPE;
-use rinja::Template;
 use serde::Deserialize;
 use tracing::{error, instrument};
 
@@ -17,16 +16,6 @@ use crate::{
     templates,
     twitch::{AsyncClient, Category, Stream},
 };
-
-#[derive(Debug, thiserror::Error)]
-#[error("could not render template")]
-pub struct AppError(#[from] rinja::Error);
-
-impl IntoResponse for AppError {
-    fn into_response(self) -> Response {
-        (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()).into_response()
-    }
-}
 
 #[derive(Debug, Deserialize)]
 pub struct SearchParams {
@@ -37,13 +26,13 @@ pub struct SearchParams {
 }
 
 #[instrument]
-pub async fn index() -> Result<impl IntoResponse, AppError> {
-    Ok(Html(templates::Index.render()?))
+pub async fn index() -> templates::Index {
+    templates::Index
 }
 
 #[instrument]
-pub async fn api_info() -> Result<impl IntoResponse, AppError> {
-    Ok(Html(templates::ApiInfo.render()?))
+pub async fn api_info() -> templates::ApiInfo {
+    templates::ApiInfo
 }
 
 #[instrument]
@@ -58,7 +47,7 @@ pub async fn favicon() -> impl IntoResponse {
 pub async fn search(
     Query(params): Query<SearchParams>,
     State(client): State<AsyncClient>,
-) -> Result<impl IntoResponse, AppError> {
+) -> templates::Results {
     let resp = client
         .lock()
         .await
@@ -69,14 +58,14 @@ pub async fn search(
         Ok(resp) => resp,
         Err(e) => {
             error!("failed querying twitch: {:?}", e);
-            return Ok(Html(templates::Results::error().render()?));
+            return templates::Results::error();
         }
     };
 
     let words = create_query_words(&params.query);
     let streams = filter_streams(resp, &words, &params.language, |s| s);
 
-    Ok(Html(templates::Results::new(words, streams).render()?))
+    templates::Results::new(words, streams)
 }
 
 fn create_query_words(query: &str) -> Vec<String> {

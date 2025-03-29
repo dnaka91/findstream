@@ -1,19 +1,20 @@
 use std::fmt::Write;
 
-use rinja::Template;
+use askama::Template;
+use askama_web::WebTemplate;
 use time::OffsetDateTime;
 
 use crate::twitch::Stream;
 
-#[derive(Template)]
+#[derive(Template, WebTemplate)]
 #[template(path = "index.html")]
 pub struct Index;
 
-#[derive(Template)]
+#[derive(Template, WebTemplate)]
 #[template(path = "api_info.html")]
 pub struct ApiInfo;
 
-#[derive(Template)]
+#[derive(Template, WebTemplate)]
 #[template(path = "results.html")]
 pub struct Results {
     query_words: Vec<String>,
