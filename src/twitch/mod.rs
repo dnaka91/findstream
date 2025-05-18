@@ -105,7 +105,7 @@ pub struct Client {
     client_id: String,
     client_secret: String,
     token: String,
-    exires_at: OffsetDateTime,
+    expires_at: OffsetDateTime,
 }
 
 impl Client {
@@ -149,7 +149,7 @@ impl Client {
             client_id,
             client_secret,
             token,
-            exires_at: OffsetDateTime::now_utc() + resp.expires_in - Duration::days(1),
+            expires_at: OffsetDateTime::now_utc() + resp.expires_in - Duration::days(1),
         })
     }
 
@@ -176,7 +176,7 @@ impl Client {
 
     #[instrument(skip(self))]
     pub async fn get_streams_all(&mut self, game_id: &str) -> Result<Vec<Stream>> {
-        if self.exires_at <= OffsetDateTime::now_utc() {
+        if self.expires_at <= OffsetDateTime::now_utc() {
             info!("refreshing token");
             self.token = Self::get_token(&self.client_id, &self.client_secret)
                 .await?
