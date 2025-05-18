@@ -2,6 +2,7 @@
 allow = [
     "Apache-2.0",
     "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
     "ISC",
     "MIT",
     "MPL-2.0",
@@ -16,6 +17,7 @@ skip = [
     "thiserror@1",
     "thiserror-impl@1",
     "wasi@0.11",
+    "webpki-roots@0.26",
 ]
 skip-tree = [
 	{ crate = "rand@0.8", depth = 2 },
