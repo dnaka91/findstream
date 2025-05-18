@@ -26,4 +26,4 @@ unidirs = "0.1.1"
 url = "2.5.4"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = { version = "0.6.0", features = ["background_threads"] }
+tikv-jemallocator = { version = "0.6.0", features = ["background_threads", "unprefixed_malloc_on_supported_platforms"] }
