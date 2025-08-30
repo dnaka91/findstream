@@ -6,24 +6,24 @@ edition = "2024"
 publish = false
 
 [dependencies]
-anyhow = "1.0.98"
+anyhow = "1.0.99"
 askama = { version = "0.14.0", default-features = false, features = ["derive", "std"] }
-askama_web = { version = "0.14.2", features = ["axum-0.8"] }
+askama_web = { version = "0.14.6", features = ["axum-0.8"] }
 axum = { version = "0.8.4", features = ["http2"] }
 basic-toml = "0.1.10"
-reqwest = { version = "0.12.15", default-features = false, features = ["json", "rustls-tls"] }
+reqwest = { version = "0.12.23", default-features = false, features = ["json", "rustls-tls"] }
 serde = { version = "1.0.219", features = ["derive"] }
-thiserror = "2.0.12"
+thiserror = "2.0.16"
 time = { version = "0.3.41", features = ["parsing"] }
-tokio = { version = "1.45.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
 tokio-shutdown = "0.1.5"
 tower = { version = "0.5.2", features = ["limit", "load-shed", "timeout"] }
-tower-http = { version = "0.6.4", features = ["compression-gzip", "decompression-gzip", "trace", "util"] }
+tower-http = { version = "0.6.6", features = ["compression-gzip", "decompression-gzip", "trace", "util"] }
 tracing = "0.1.41"
 tracing-archer = { git = "https://github.com/dnaka91/archer.git" }
-tracing-subscriber = "0.3.19"
+tracing-subscriber = "0.3.20"
 unidirs = "0.1.1"
-url = "2.5.4"
+url = "2.5.7"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { version = "0.6.0", features = ["background_threads", "unprefixed_malloc_on_supported_platforms"] }
