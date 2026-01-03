@@ -32,6 +32,8 @@ FROM scratch
 COPY --from=builder /volume/dist/findstream /bin/
 COPY --from=newuser /tmp/group /tmp/passwd /etc/
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
 EXPOSE 8080
 USER findstream
 
