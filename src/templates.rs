@@ -1,3 +1,9 @@
+#![expect(
+    clippy::literal_string_with_formatting_args,
+    clippy::needless_pass_by_value,
+    clippy::too_many_lines
+)]
+
 use std::fmt::Write;
 
 use maud::{DOCTYPE, Markup, PreEscaped, html};
