@@ -6,6 +6,7 @@ allow = [
     "ISC",
     "MIT",
     "MPL-2.0",
+    "OpenSSL",
     "Unicode-3.0",
 ]
 
@@ -14,11 +15,13 @@ ignore = true
 
 [bans]
 skip = [
+    "core-foundation@0.9",
+    "getrandom@0.2",
     "thiserror@1",
     "thiserror-impl@1",
 ]
 skip-tree = [
-    { crate = "windows-sys@0.48", depth = 3 },
+    { crate = "windows-sys@0.45", depth = 3 },
     { crate = "windows-sys@0.52", depth = 3 },
-    { crate = "windows-sys@0.59", depth = 3 },
+    { crate = "windows-sys@0.60", depth = 3 },
 ]

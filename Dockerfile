@@ -1,30 +1,35 @@
-FROM rust:1.87-slim AS builder
+# syntax=docker/dockerfile:1.20
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.8.0 AS xx
+FROM --platform=$BUILDPLATFORM rust:1.92 AS builder
+
+COPY --from=xx / /
 
 WORKDIR /volume
+ENV RUSTFLAGS="-C target-feature=+crt-static"
+ENV XX_VERIFY_STATIC=1
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential musl-tools && \
-    rustup target add x86_64-unknown-linux-musl && \
-    cargo init --bin
+    apt-get install -y clang lld
 
-COPY Cargo.lock Cargo.toml ./
+ARG TARGETPLATFORM
 
-RUN cargo build --release --target x86_64-unknown-linux-musl
+RUN xx-apt-get install -y xx-c-essentials
 
-COPY assets/ assets/
-COPY src/ src/
-COPY templates/ templates/
+COPY --parents assets/ src/ templates/ Cargo.lock Cargo.toml ./
 
-RUN touch src/main.rs && cargo build --release --target x86_64-unknown-linux-musl
+RUN xx-cargo build --release && \
+    xx-verify target/$(xx-cargo --print-target-triple)/release/findstream && \
+    mkdir dist && \
+    cp target/$(xx-cargo --print-target-triple)/release/findstream dist/
 
-FROM alpine:3 AS newuser
+FROM --platform=$BUILDPLATFORM alpine:3 AS newuser
 
 RUN echo "findstream:x:1000:" > /tmp/group && \
     echo "findstream:x:1000:1000::/dev/null:/sbin/nologin" > /tmp/passwd
 
 FROM scratch
 
-COPY --from=builder /volume/target/x86_64-unknown-linux-musl/release/findstream /bin/
+COPY --from=builder /volume/dist/findstream /bin/
 COPY --from=newuser /tmp/group /tmp/passwd /etc/
 
 EXPOSE 8080
