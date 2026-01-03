@@ -3,6 +3,7 @@
 "cargo:cargo-shear" = "1"
 "cargo:maudfmt" = "0.1"
 editorconfig-checker = "3"
+tombi = "0.7"
 
 [tasks.fmt]
 description = "Format all code"

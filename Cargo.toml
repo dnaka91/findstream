@@ -1,7 +1,6 @@
 [package]
 name = "findstream"
 version = "0.2.0"
-authors = ["Dominik Nakamura <dnaka91@gmail.com>"]
 edition = "2024"
 publish = false
 
@@ -16,12 +15,20 @@ time = { version = "0.3.44", features = ["parsing"] }
 tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
 tokio-shutdown = "0.1.5"
 tower = { version = "0.5.2", features = ["limit", "load-shed", "timeout"] }
-tower-http = { version = "0.6.8", features = ["compression-gzip", "decompression-gzip", "trace", "util"] }
+tower-http = { version = "0.6.8", features = [
+    "compression-gzip",
+    "decompression-gzip",
+    "trace",
+    "util"
+] }
 tracing = "0.1.44"
 tracing-subscriber = "0.3.22"
 unidirs = "0.1.2"
 url = "2.5.7"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = { version = "0.6.1", features = ["background_threads", "override_allocator_on_supported_platforms"] }
 tikv-jemalloc-sys = { version = "0.6.1", default-features = false }
+tikv-jemallocator = { version = "0.6.1", features = [
+    "background_threads",
+    "override_allocator_on_supported_platforms"
+] }
