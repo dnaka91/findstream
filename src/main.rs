@@ -7,17 +7,15 @@ use std::{
     env,
     net::{Ipv4Addr, SocketAddr},
     sync::Arc,
-    time::Duration,
 };
 
 use anyhow::Result;
 use tokio::{net::TcpListener, sync::Mutex};
 use tokio_shutdown::Shutdown;
-use tracing::{Level, Subscriber, info};
-use tracing_archer::Handle;
-use tracing_subscriber::{Layer, filter::Targets, prelude::*, registry::LookupSpan};
+use tracing::{Level, info};
+use tracing_subscriber::{filter::Targets, prelude::*};
 
-use crate::{settings::Archer, twitch::Client};
+use crate::twitch::Client;
 
 mod handlers;
 mod lang;
@@ -41,17 +39,8 @@ const ADDRESS: Ipv4Addr = if cfg!(debug_assertions) {
 async fn main() -> Result<()> {
     let settings = settings::load()?;
 
-    let (quiver, handle) = match settings.tracing.archer.map(init_tracing) {
-        Some(tracing) => {
-            let (quiver, handle) = tracing.await?;
-            (Some(quiver), Some(handle))
-        }
-        None => (None, None),
-    };
-
     tracing_subscriber::registry()
         .with(tracing_subscriber::fmt::layer())
-        .with(quiver)
         .with(
             Targets::new()
                 .with_target(env!("CARGO_CRATE_NAME"), Level::TRACE)
@@ -74,22 +63,5 @@ async fn main() -> Result<()> {
 
     server.await?;
 
-    if let Some(handle) = handle {
-        handle.shutdown(Duration::from_secs(5)).await;
-    }
-
     Ok(())
-}
-
-async fn init_tracing<S>(settings: Archer) -> Result<(impl Layer<S>, Handle)>
-where
-    for<'span> S: Subscriber + LookupSpan<'span>,
-{
-    tracing_archer::builder()
-        .with_server_addr(settings.address)
-        .with_server_cert(settings.certificate)
-        .with_resource(env!("CARGO_CRATE_NAME"), env!("CARGO_PKG_VERSION"))
-        .build()
-        .await
-        .map_err(Into::into)
 }

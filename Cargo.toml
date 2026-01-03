@@ -20,7 +20,6 @@ tokio-shutdown = "0.1.5"
 tower = { version = "0.5.2", features = ["limit", "load-shed", "timeout"] }
 tower-http = { version = "0.6.6", features = ["compression-gzip", "decompression-gzip", "trace", "util"] }
 tracing = "0.1.41"
-tracing-archer = { git = "https://github.com/dnaka91/archer.git" }
 tracing-subscriber = "0.3.20"
 unidirs = "0.1.1"
 url = "2.5.7"
