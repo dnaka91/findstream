@@ -19,8 +19,8 @@ fn base(content: Markup) -> Markup {
 
                 link
                     rel="stylesheet"
-                    href="https://cdn.jsdelivr.net/npm/bulma@1.0.3/css/bulma.min.css"
-                    integrity="sha256-RwYNyYLkMTjyYn8FRzVzQFtHXuHg9dpfkPCuf6j2XDM="
+                    href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+                    integrity="sha256-Z/om3xyp6V2PKtx8BPobFfo9JCV0cOvBDMaLmquRS+4="
                     crossorigin="anonymous";
             }
         }
