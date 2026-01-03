@@ -1,0 +1,13 @@
+[tools]
+"cargo:cargo-deny" = "0.18"
+"cargo:cargo-shear" = "1"
+"cargo:maudfmt" = "0.1"
+editorconfig-checker = "3"
+
+[tasks.fmt]
+description = "Format all code"
+run = [
+    "maudfmt src/templates.rs",
+    "cargo +nightly fmt --all",
+]
+alias = "f"

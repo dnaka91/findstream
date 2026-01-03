@@ -7,13 +7,11 @@ publish = false
 
 [dependencies]
 anyhow = "1.0.100"
-askama = { version = "0.15.1", default-features = false, features = ["derive", "std"] }
-askama_web = { version = "0.15.0", features = ["axum-0.8", "tracing-0.1"] }
 axum = { version = "0.8.8", features = ["http2"] }
 basic-toml = "0.1.10"
+maud = { version = "0.27.0", features = ["axum"] }
 reqwest = { version = "0.13.1", features = ["json"] }
 serde = { version = "1.0.228", features = ["derive"] }
-thiserror = "2.0.17"
 time = { version = "0.3.44", features = ["parsing"] }
 tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
 tokio-shutdown = "0.1.5"

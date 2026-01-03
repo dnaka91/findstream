@@ -22,6 +22,5 @@ skip = [
 ]
 skip-tree = [
     { crate = "windows-sys@0.45", depth = 3 },
-    { crate = "windows-sys@0.52", depth = 3 },
     { crate = "windows-sys@0.60", depth = 3 },
 ]
