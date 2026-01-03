@@ -335,6 +335,7 @@ dependencies = [
  "maud",
  "reqwest",
  "serde",
+ "tikv-jemalloc-sys",
  "tikv-jemallocator",
  "time",
  "tokio",

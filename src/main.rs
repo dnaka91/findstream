@@ -10,6 +10,8 @@ use std::{
 };
 
 use anyhow::Result;
+#[cfg(not(target_env = "msvc"))]
+use tikv_jemalloc_sys as _;
 use tokio::{net::TcpListener, sync::Mutex};
 use tokio_shutdown::Shutdown;
 use tracing::{Level, info};
