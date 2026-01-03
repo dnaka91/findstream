@@ -8,6 +8,7 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
+use maud::Markup;
 use reqwest::header::CONTENT_TYPE;
 use serde::Deserialize;
 use tracing::{error, instrument};
@@ -26,13 +27,13 @@ pub struct SearchParams {
 }
 
 #[instrument]
-pub async fn index() -> templates::Index {
-    templates::Index
+pub async fn index() -> Markup {
+    templates::index()
 }
 
 #[instrument]
-pub async fn api_info() -> templates::ApiInfo {
-    templates::ApiInfo
+pub async fn api_info() -> Markup {
+    templates::api_info()
 }
 
 #[instrument]
@@ -47,7 +48,7 @@ pub async fn favicon() -> impl IntoResponse {
 pub async fn search(
     Query(params): Query<SearchParams>,
     State(client): State<AsyncClient>,
-) -> templates::Results {
+) -> Markup {
     let resp = client
         .lock()
         .await
@@ -58,14 +59,14 @@ pub async fn search(
         Ok(resp) => resp,
         Err(e) => {
             error!("failed querying twitch: {:?}", e);
-            return templates::Results::error();
+            return templates::results(&[], &[], true);
         }
     };
 
     let words = create_query_words(&params.query);
     let streams = filter_streams(resp, &words, &params.language, |s| s);
 
-    templates::Results::new(words, streams)
+    templates::results(&words, &streams, false)
 }
 
 fn create_query_words(query: &str) -> Vec<String> {
