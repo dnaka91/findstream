@@ -422,7 +422,7 @@ pub fn results(query_words: &[String], streams: &[Stream], error: bool) -> Marku
                                         }
                                         div.card-content {
                                             p.title.is-4 {
-                                                a href={ "https://twitch.tv" (stream.user_name) } {
+                                                a href={ "https://twitch.tv/" (stream.user_name) } {
                                                     (stream.title)
                                                 }
                                             }
