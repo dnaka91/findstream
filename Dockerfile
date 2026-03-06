@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.20
-FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.8.0 AS xx
-FROM --platform=$BUILDPLATFORM rust:1.92 AS builder
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.9.0 AS xx
+FROM --platform=$BUILDPLATFORM rust:1.94 AS builder
 
 COPY --from=xx / /
 
