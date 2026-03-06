@@ -6,7 +6,6 @@ allow = [
     "ISC",
     "MIT",
     "MPL-2.0",
-    "OpenSSL",
     "Unicode-3.0",
 ]
 
@@ -22,5 +21,4 @@ skip = [
 ]
 skip-tree = [
     { crate = "windows-sys@0.45", depth = 3 },
-    { crate = "windows-sys@0.60", depth = 3 },
 ]
